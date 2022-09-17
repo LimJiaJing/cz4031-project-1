@@ -44,7 +44,7 @@ while (getline(testfile, testline))
 Record* ptr_arr =(Record*) malloc(sizeof(Record)*numofrecords);
 int skip_header = 0;
 int record_number = 0;
-cout<< "ok";
+//cout<< "ok";
 ifstream infile("data.tsv");
 string line;
 while (getline(infile, line))
