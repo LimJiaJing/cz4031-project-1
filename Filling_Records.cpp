@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <fstream> //ifstream
 #include <sstream>  // stringstream
 #include <iostream> // cout, endl
@@ -13,7 +14,7 @@ class Record {
   private:    
     int R_name;
     int R_avgrating;
-    int R_numofvotes;   
+    int R_numofvotes;
   public:
     void SetRecord(int name, int avgrating, int numofvotes);
     int getName() { return R_name; }
@@ -29,19 +30,19 @@ void Record::SetRecord(int name,int avgrating,int numofvotes)
 int main() {
 ifstream infile("data.tsv");
 string line;
+// this commeneted out block is to find out number of records im working on a dynamic one but this one works fine like so it works but not best implementation
 //int numofrecords=-1;
 // while (getline(infile, line))
 // {
 //     numofrecords+=1;
 // }
 // cout<< numofrecords;
-
 //actual number of record is 1070318
-Record Records[5];
 
-int count =0;
+Record* ptr_arr =(Record*) malloc(sizeof(Record)*1070318);
 int skip_header = 0;
 int record_number = 0;
+
 while (getline(infile, line))
 {
     if(skip_header ==0)
@@ -51,7 +52,7 @@ while (getline(infile, line))
     }
     string string_component;
     stringstream record_string(line); 
-    cout << "This is the line "<<line;
+    cout << "This is the Record line from dataset "<<line;
     cout << "\n";
     int name;
     int average_rating_int;
@@ -73,14 +74,13 @@ while (getline(infile, line))
         numofvotes = stoi(string_component);
      }
     }
-    Records[record_number].SetRecord(name,average_rating_int,numofvotes);
-    cout << Records[record_number].getName() << "\t"<< Records[record_number].getAvgRating() << "\t"<< Records[record_number].getNumOfVotes() ;
+    //storing in the pointer array
+    ptr_arr[record_number].SetRecord(name,average_rating_int,numofvotes);
+    //displaying the stored value
+    cout <<  ptr_arr[record_number].getName() << "\t"<<  ptr_arr[record_number].getAvgRating() << "\t"<<  ptr_arr[record_number].getNumOfVotes() ;
     cout << "\n";
+    //move on to next record by incrementing array pointer
     record_number++;
-    if(record_number>5)
-    {
-        break;
-    }
 }
 infile.close();
 return 0;
