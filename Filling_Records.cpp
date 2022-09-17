@@ -4,6 +4,7 @@
 #include <iostream> // cout, endl
 #include <iomanip>  // ws
 #include <map>      // map
+#include <string>
 using namespace std;
 
 // https://www.w3schools.com/cpp/cpp_access_specifiers.asp
@@ -27,22 +28,25 @@ void Record::SetRecord(int name,int avgrating,int numofvotes)
     R_avgrating = avgrating;
     R_numofvotes = numofvotes;
 }
+
 int main() {
-ifstream infile("data.tsv");
-string line;
+ifstream testfile("data.tsv");
+string testline;
 // this commeneted out block is to find out number of records im working on a dynamic one but this one works fine like so it works but not best implementation
-//int numofrecords=-1;
-// while (getline(infile, line))
-// {
-//     numofrecords+=1;
-// }
+int numofrecords= -1;
+while (getline(testfile, testline))
+{
+    numofrecords+=1;
+}
 // cout<< numofrecords;
 //actual number of record is 1070318
 
-Record* ptr_arr =(Record*) malloc(sizeof(Record)*1070318);
+Record* ptr_arr =(Record*) malloc(sizeof(Record)*numofrecords);
 int skip_header = 0;
 int record_number = 0;
-
+cout<< "ok";
+ifstream infile("data.tsv");
+string line;
 while (getline(infile, line))
 {
     if(skip_header ==0)
