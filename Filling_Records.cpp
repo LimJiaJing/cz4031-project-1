@@ -14,12 +14,12 @@ using namespace std;
 class Record {
   private:    
     int R_name;
-    int R_avgrating;
+    int16_t R_avgrating;
     int R_numofvotes;
   public:
     void SetRecord(int name, int avgrating, int numofvotes);
     int getName() { return R_name; }
-    int getAvgRating() { return R_avgrating; }
+    int16_t getAvgRating() { return R_avgrating; }
     int getNumOfVotes()  { return R_numofvotes; }
 };
 void Record::SetRecord(int name,int avgrating,int numofvotes)
@@ -40,11 +40,10 @@ while (getline(testfile, testline))
 }
 // cout<< numofrecords;
 //actual number of record is 1070318
-
 Record* ptr_arr =(Record*) malloc(sizeof(Record)*numofrecords);
 int skip_header = 0;
 int record_number = 0;
-//cout<< "ok";
+// cout<< "ok";
 ifstream infile("data.tsv");
 string line;
 while (getline(infile, line))
@@ -59,7 +58,7 @@ while (getline(infile, line))
     cout << "This is the Record line from dataset "<<line;
     cout << "\n";
     int name;
-    int average_rating_int;
+    int16_t average_rating_int;
     int numofvotes;
     for (int i = 0; i < 3; i++) {
      getline(record_string, string_component, '\t'); 
@@ -71,7 +70,7 @@ while (getline(infile, line))
      else if (i==1)
      {
         float average_rating_float = stof(string_component);
-        average_rating_int = static_cast<int>(average_rating_float*10);
+        average_rating_int = static_cast<int16_t>(average_rating_float*10);
      }
      else
      {
