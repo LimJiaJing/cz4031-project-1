@@ -5,6 +5,8 @@
 #include <iomanip>  // ws
 #include <map>      // map
 #include <string>
+#pragma pack(1)
+
 using namespace std;
 
 // https://www.w3schools.com/cpp/cpp_access_specifiers.asp
