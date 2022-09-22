@@ -1,5 +1,4 @@
 #include "Record.h"
-#include <stdint.h>
 
 Record::Record(int name, int16_t avgrating, int numofvotes)
 {

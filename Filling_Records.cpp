@@ -14,23 +14,6 @@ using namespace std;
 //https://reactgo.com/cpp-remove-first-n-characters/#:~:text=To%20remove%20the%20first%20n%20characters%20of%20a%20string%2C%20we,remove%20from%20the%20index%200.&text=Note%3A%20The%20erase()%20function,of%20creating%20a%20new%20string.
 //https://stackoverflow.com/questions/67488565/getting-specific-data-from-a-text-file-in-c
 //https://www.programiz.com/cpp-programming/string-float-conversion
-// class Record {
-//   private:    
-//     int R_name;
-//     int16_t R_avgrating;
-//     int R_numofvotes;
-//   public:
-//     void SetRecord(int name, int avgrating, int numofvotes);
-//     int getName() { return R_name; }
-//     int16_t getAvgRating() { return R_avgrating; }
-//     int getNumOfVotes()  { return R_numofvotes; }
-// };
-// void Record::SetRecord(int name,int avgrating,int numofvotes)
-// {
-//     R_name = name;
-//     R_avgrating = avgrating;
-//     R_numofvotes = numofvotes;
-// }
 
 int main() {
 ifstream testfile("data.tsv");
