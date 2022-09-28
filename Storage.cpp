@@ -3,6 +3,7 @@
 #include "BlockInfo.h"
 #include "constants.h"
 #include "Record.h"
+#include "Record.cpp"
 #pragma pack(1)
 
 
@@ -119,8 +120,7 @@ Record Storage::retrieve_record(char* addr) {
     memcpy(&i, addr, 4);
     memcpy(&j, addr + 4, 2);
     memcpy(&k, addr + 6, 4);
-    Record result;
-    result.Record::SetRecord(i, j, k);
+    Record result(i, j, k);
     return result;
 }
 

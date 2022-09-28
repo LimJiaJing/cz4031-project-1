@@ -66,8 +66,7 @@ int main() {
          }
         }
         //storing in the pointer array
-        Record temp;
-        temp.SetRecord(name,(int16_t)average_rating_int,numofvotes);
+        Record temp(name,(int16_t)average_rating_int,numofvotes);
         //displaying the stored value
         cout <<  temp.getName() << "\t"<<  temp.getAvgRating() << "\t"<<  temp.getNumOfVotes();
 
@@ -91,17 +90,16 @@ int main() {
 void test(Storage data) {
 
     for (int i = 0; i < 30; i++) {
-        Record test;
-        test.Record::SetRecord(i, (int16_t)3+i, i*4);
+        Record test(i, (int16_t)3+i, i*4);
         data.insert_item(&test, RECORD_SIZE);
     }
-    Record test, test1, r;
-    test.Record::SetRecord(1, (int16_t)55, 5);
-    test1.Record::SetRecord(2, (int16_t)8, 9);
+    Record test(1, (int16_t)55, 5);
+    Record test1(2, (int16_t)8, 9);
+    Record* r;
     data.insert_item(&test, RECORD_SIZE);
     data.update_item((char*)data.storage_ptr, RECORD_SIZE, &test1);
-    memcpy(&r,(char*)data.storage_ptr, RECORD_SIZE);
-    cout << r.getName() << " " << r.getAvgRating() << " " << r.getNumOfVotes() << endl;
+    memcpy(r,(char*)data.storage_ptr, RECORD_SIZE);
+    cout << r->getName() << " " << r->getAvgRating() << " " << r->getNumOfVotes() << endl;
     data.delete_item((char*)data.storage_ptr, RECORD_SIZE);
     // Test delete by exact address
     data.delete_item((char*)data.storage_ptr, RECORD_SIZE);
