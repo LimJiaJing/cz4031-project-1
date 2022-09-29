@@ -69,7 +69,7 @@ int main() {
         Record temp(name,(int16_t)average_rating_int,numofvotes);
         //displaying the stored value
         cout <<  temp.getName() << "\t"<<  temp.getAvgRating() << "\t"<<  temp.getNumOfVotes();
-
+        //insert to block
         data.insert_item(&temp, RECORD_SIZE);
         cout << "\n";
         //move on to next record by incrementing array pointer
