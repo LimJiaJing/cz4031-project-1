@@ -26,7 +26,7 @@ public:
     bool allocate_block();
     void release_blk();
     unsigned int get_blk_id(char* addr);
-    void insert_item(void* item_addr, int item_size);
+    char* insert_item(void* item_addr, int item_size);
     void delete_item(char* addr, int size_to_delete);
     void update_item(char* addr, int size_to_update, void* new_item);
     Record retrieve_record(char* addr);

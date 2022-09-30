@@ -1,9 +1,10 @@
 #include <iostream>
 #include "Storage.h"
 #include "BlockInfo.h"
-#include "constants.h"
 #include "Record.h"
 #include "Record.cpp"
+#include <stdio.h>
+#include <string.h>
 #pragma pack(1)
 
 
@@ -74,7 +75,7 @@ unsigned int Storage::get_blk_id(char* addr) {
 /*
 Insert a record to the storage memory.
 */
-void Storage::insert_item(void* item_addr, int item_size) {
+char* Storage::insert_item(void* item_addr, int item_size) {
     if (item_size > blk_size) {
         cout<<"Insertion fails since the record size is larger than the block size!"<<endl;
     }
@@ -83,6 +84,7 @@ void Storage::insert_item(void* item_addr, int item_size) {
     char* target_addr = target_pos.second;
     if (target_addr != nullptr){
         memcpy(target_addr, (char*) item_addr, item_size);
+        memset(item_addr, '\0', item_size);
         blks[blk_id].store(item_size);
         allocated_size += item_size;
 
@@ -91,7 +93,7 @@ void Storage::insert_item(void* item_addr, int item_size) {
     } else {
         cout << "The storage is full. No more space for new items." << endl;
     }
-    return;
+    return target_addr;
 }
 
 void Storage::delete_item(char* addr, int size_to_delete) {
