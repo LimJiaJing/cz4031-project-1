@@ -3,6 +3,7 @@
 #include "BlockInfo.h"
 #include "Record.h"
 #include "Record.cpp"
+#include "constants.h"
 #include <stdio.h>
 #include <string.h>
 #pragma pack(1)
@@ -117,15 +118,34 @@ void Storage::update_item(char* addr, int size_to_update, void* new_item) {
 
 
 Record Storage::retrieve_record(char* addr) {
-    int i, k;
-    int16_t j;
-    memcpy(&i, addr, 4);
-    memcpy(&j, addr + 4, 2);
-    memcpy(&k, addr + 6, 4);
-    Record result(i, j, k);
-    return result;
+    char* blk_addr = record_addr_to_blk_addr(addr);
+    vector<Record> records = retrieve_blk(blk_addr);
+    int index = (addr - blk_addr) / RECORD_SIZE;
+    return records.at(index);
 }
 
+char* Storage::record_addr_to_blk_addr(char* raddr) {
+    unsigned int blk_id = get_blk_id(raddr);
+    return (char*)storage_ptr + blk_id * blk_size;
+}
+
+vector<Record> Storage::retrieve_blk(char* blk_addr) {
+    unsigned int space_accessed = 0;
+    vector<Record> res = {};
+
+    while (space_accessed < blks[get_blk_id(blk_addr)].get_space_used()) {
+        char* record_addr = blk_addr + space_accessed;
+        int i, k;
+        int16_t j;
+        memcpy(&i, record_addr, 4);
+        memcpy(&j, record_addr + 4, 2);
+        memcpy(&k, record_addr + 6, 4);
+        Record r(i, j, k);
+        res.push_back(r);
+        space_accessed += RECORD_SIZE;
+    }
+    return res;
+}
 
 int Storage::get_storage_size() {
     return storage_size;

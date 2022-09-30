@@ -14,6 +14,7 @@ public:
     unsigned int allocated_nof_blk; // number of blocks allocated
     unsigned int allocated_size; // size allocated to store items
     unsigned int cur_blk_id;
+    unsigned int access_count;
     BlockInfo* blks; // a list of block information, storing available entry in each block
 
     void* storage_ptr; // point to the start address of the memory
@@ -30,6 +31,8 @@ public:
     void delete_item(char* addr, int size_to_delete);
     void update_item(char* addr, int size_to_update, void* new_item);
     Record retrieve_record(char* addr);
+    char* record_addr_to_blk_addr(char* raddr);
+    vector<Record> retrieve_blk(char* blk_addr);
 
     int get_storage_size();
     int get_blk_size();
