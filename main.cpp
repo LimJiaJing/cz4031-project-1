@@ -4,6 +4,7 @@
 #include "Storage.cpp"
 #include "BlockInfo.h"
 #include "BlockInfo.cpp"
+#include "Calculations.cpp"
 #include <cstdlib>
 #include <fstream> //ifstream
 #include <sstream>  // stringstream
@@ -15,8 +16,16 @@
 void test(Storage data);
 
 int main() {
-    Storage data = Storage(20000000, 200);
+    Storage data = Storage(20000000, 500);
     //test(data);
+    Calculations cals;
+    int totalSize1 = cals.GetTotalBlockSize(BLOCK_SIZE_1);
+    int totalSize2 = cals.GetTotalBlockSize(BLOCK_SIZE_2);
+    cout << totalSize1 << endl;
+    cout << totalSize2 << endl;
+    Record test(1, (int16_t)55, 5);
+    data.insert_item(&test, RECORD_SIZE);
+    data.delete_item((char*) data.storage_ptr, RECORD_SIZE);
 
     ifstream testfile("data.tsv");
     string testline;
@@ -69,7 +78,7 @@ int main() {
         Record temp(name,(int16_t)average_rating_int,numofvotes);
         //displaying the stored value
         cout <<  temp.getName() << "\t"<<  temp.getAvgRating() << "\t"<<  temp.getNumOfVotes();
-        //insert to block
+
         data.insert_item(&temp, RECORD_SIZE);
         cout << "\n";
         //move on to next record by incrementing array pointer
