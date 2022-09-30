@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int Calculations::GetMaxNumOfRecordsPerBlock(int blockSize) 
+int Calculations::GetMaxNumOfRecordsPerBlock(int blockSize)
 {
     int numOfRecords = 1;
     // 8 is the number of bits in 1 byte
@@ -27,13 +27,25 @@ int Calculations::GetMaxNumOfRecordBlocks(int blockSize)
 
 int Calculations::GetMaxNumOfKeysPerIndexBlock(int blockSize)
 {
-    int numOfKeys = 1;
-    while ((numOfKeys * INDEX_KEY_SIZE) + ((numOfKeys + 1) * INDEX_POINTER_SIZE) <= blockSize)
+    int numOfKeysForInternalNode = 1;
+    while (INTERNAL_NODE_INDEX_HEADER_SIZE + (numOfKeysForInternalNode * INDEX_KEY_SIZE) + ((numOfKeysForInternalNode + 1) * INDEX_POINTER_SIZE) <= blockSize)
     {
-        numOfKeys++;
+        numOfKeysForInternalNode++;
     }
 
-    return numOfKeys - 1;
+    int numOfKeysForLeafNode = 1;
+    while (LEAF_NODE_INDEX_HEADER_SIZE + (numOfKeysForLeafNode * INDEX_KEY_SIZE) + ((numOfKeysForLeafNode + 1) * INDEX_POINTER_SIZE) <= blockSize)
+    {
+        numOfKeysForLeafNode++;
+    }
+
+    if (numOfKeysForInternalNode == numOfKeysForLeafNode)
+    {
+        return numOfKeysForInternalNode - 1;
+    } else {
+        cout << "Number of keys should be the same!" << endl;
+        return 0;
+    }
 }
 
 int Calculations::GetMinNumOfKeysPerInternalNode(int blockSize)
@@ -103,12 +115,7 @@ int Calculations::GetTotalBlockSize(int blockSize)
     return totalSize;
 }
 
-int main()
+int Calculations::GetMaxNumOfPointersInLinkedListBlock(int blockSize)
 {
-    Calculations calculations;
-    int totalSize1 = calculations.GetTotalBlockSize(BLOCK_SIZE_1);
-    int totalSize2 = calculations.GetTotalBlockSize(BLOCK_SIZE_2);
-    cout << totalSize1 << endl;
-    cout << totalSize2 << endl;
-    return 0;
+    return floor((blockSize - LINKED_LIST_POINTER_SIZE) / LINKED_LIST_POINTER_SIZE);
 }

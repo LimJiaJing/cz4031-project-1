@@ -14,5 +14,8 @@ class Calculations
         int GetMaxNumOfIndexBlocks(int blockSize);
         int GetMaxSizeOfIndexBlocks(int blockSize);
 
+        // Linked List
+        int GetMaxNumOfPointersInLinkedListBlock(int blockSize);
+
         int GetTotalBlockSize(int blockSize);
 };
