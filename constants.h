@@ -1,3 +1,5 @@
+#ifndef CONSTANTS_H_
+#define CONSTANTS_H_
 // Common
 const int BLOCK_SIZE_1 = 200;
 const int BLOCK_SIZE_2 = 500;
@@ -14,3 +16,4 @@ const int INDEX_POINTER_SIZE = 8;
 
 // Linked List
 const int LINKED_LIST_POINTER_SIZE = 8;
+#endif
