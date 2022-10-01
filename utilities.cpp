@@ -16,7 +16,7 @@
 #pragma pack(1)
 using namespace std;
 
-void store_records(Storage data);
+void store_records(Storage* data);
 
 int main(){
     char sel1;
@@ -127,8 +127,9 @@ int main(){
                     int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
                     int reservation = 1000000;
                     Storage data = Storage(storage_size + reservation, blockSize);
-                    store_records(data);
-                    cout << "okay";
+
+                    store_records(&data);
+
                     break;
                 }
             case '2':
@@ -205,6 +206,7 @@ int main(){
         } while (!validSelection);
     }
 }
+
 void store_records(Storage data) {
     Record test(1, (int16_t)55, 5);
     data.insert_item(&test, RECORD_SIZE);
@@ -212,6 +214,7 @@ void store_records(Storage data) {
 
     // ifstream testfile("data.tsv");
     // string testline;
+
     // this commeneted out block is to find out number of records im working on a dynamic one but this one works fine like so it works but not best implementation
     // int numofrecords= -1;
     // while (getline(testfile, testline))
@@ -226,7 +229,7 @@ void store_records(Storage data) {
     // cout<< "ok";
     ifstream infile("data.tsv");
     string line;
-    cout<<data.blk_size<<endl;
+    cout<<data->blk_size<<endl;
     while (getline(infile, line))
     {
         if(skip_header ==0)
@@ -261,9 +264,9 @@ void store_records(Storage data) {
         //storing in the pointer array
         Record temp(name,(int16_t)average_rating_int,numofvotes);
         //displaying the stored value
-        //cout <<  temp.getName() << "\t"<<  temp.getAvgRating() << "\t"<<  temp.getNumOfVotes();
+        //cout <<  temp.getTconst() << "\t"<<  temp.rating2Dec() << "\t"<<  temp.getNumOfVotes();
 
-        data.insert_item(&temp, RECORD_SIZE);
+        data->insert_item(&temp, RECORD_SIZE);
         cout << "\n";
         record_number++;
         if (record_number>100)
@@ -274,10 +277,12 @@ void store_records(Storage data) {
     infile.close();
 
 
-    cout << "Total storage space: " << data.get_storage_size() << " Byte" << endl;
-    cout << "Block size: " << data.get_blk_size() << " Bytes" << endl;
+    cout << "Total storage space: " << data->get_storage_size() << " Byte" << endl;
+    cout << "Block size: " << data->get_blk_size() << " Bytes" << endl;
     cout << "Record size: " << RECORD_SIZE << " Btyes" <<endl;
-    cout << "Allocated number of blocks: " << data.get_allocated_nof_blk() << endl;
-    cout << "Allocated size: " << data.allocated_size<<endl;
+    cout << "Allocated number of blocks: " << data->get_allocated_nof_blk() << endl;
+    cout << "Allocated size: " << data->allocated_size<<endl;
+
+    return;
 }
 
