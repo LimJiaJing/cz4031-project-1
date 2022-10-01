@@ -75,7 +75,7 @@ CInternalNode::CInternalNode(int MAXNUM_KEY, int MAXNUM_POINTER)
     ORDER_V = MAX_KEYS / 2;
 
     KEY_TYPE m_Keys[MAX_KEYS];
-    CNode* m_Pointers[MAXNUM_POINTER];
+    m_Pointers = (CNode**)malloc(MAXNUM_POINTER * sizeof(CNode*));
     m_Type = NODE_TYPE_INTERNAL;
 
     int i = 0;
@@ -656,6 +656,7 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
     if (pOldNode->GetCount() < MAX_KEYS)
     {
          pOldNode->Insertdata(data,rdata);
+         return true;
     }
 
     // 原叶子结点已满，新建叶子结点，并把原结点后一半数据剪切到新结点
