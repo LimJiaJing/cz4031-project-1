@@ -215,9 +215,11 @@ public:
     // 结合结点
     bool Combine(CLeafNode* pNode);
 
+    vector<CNode *> AncestoryOfLeadNode(CLeafNode *node);
+
 public:
     // 以下两个变量用于实现双向链表
-    CLeafNode* m_pPrevNode;                 // 前一个结点
+    CLeafNode *m_pPrevNode;                 // 前一个结点
     CLeafNode* m_pNextNode;                 // 后一个结点;
 protected:
 
@@ -296,10 +298,11 @@ public:
             m_Depth = m_Depth - 1;
         }
     }
+    int NumofNode(CNode *root);
 
 public:
     // 以下两个变量用于实现双向链表
-    CLeafNode* m_pLeafHead;                 // 头结点
+    CLeafNode *m_pLeafHead;                   // 头结点
     CLeafNode* m_pLeafTail;                   // 尾结点
     // 为插入而查找叶子结点
     CLeafNode *SearchLeafNode(KEY_TYPE data);

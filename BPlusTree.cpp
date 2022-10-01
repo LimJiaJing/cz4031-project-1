@@ -6,6 +6,8 @@
 
 
 using std::cout;
+int num_nodes_deleted = 0;
+
 CNode::CNode()
 {
     m_Type = NODE_TYPE_LEAF;
@@ -273,7 +275,7 @@ bool CInternalNode::Combine(CNode* pNode)
         m_Count++;
         m_Pointers[m_Count] = pNode->GetPointer(i+1);
     }
-
+    num_nodes_deleted++;
     return true;
 }
 
@@ -511,6 +513,7 @@ bool CLeafNode::Combine(CLeafNode* pNode)
         this->Insert(pNode->GetElement(i),pNode->GetPointer1(i));
     }
 
+    num_nodes_deleted++;
     return true;
 }
 BPlusTree::BPlusTree(int Order, short int maxnum1 )
@@ -1231,6 +1234,41 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
     return DeleteInternalNode(pFather, NewKey);
 }
 
+int BPlusTree::NumofNode(CNode *root)
+{
+    int numofchildnode = 0;
+    if (root == nullptr)
+    {
+        return 0;
+    }
+    if (root->GetType() == NODE_TYPE_LEAF)
+    {
+        return 0;
+    }
+    for (int i = 1; i <= root->GetCount() + 1; i++)
+    {
+        numofchildnode = numofchildnode + this->NumofNode(root->GetPointer(i));
+    }
+    numofchildnode = root->GetCount() + 1 + numofchildnode;
+    return numofchildnode;
+}
+
+vector<CNode*> CLeafNode::AncestoryOfLeadNode(CLeafNode *node){
+
+    vector<CNode *> chain = {};
+    if (node == nullptr)
+    {
+        return chain;
+    }
+    chain.push_back(node);
+    CNode* curr_node = node;
+    do {
+        curr_node = curr_node->GetFather();
+        chain.push_back(curr_node);
+    } while (curr_node->GetType() != NODE_TYPE_ROOT);
+   
+    return chain;
+}
 
 bool Parray::insertarray(Record* Ppointer){
    if(Ppointer== nullptr)
