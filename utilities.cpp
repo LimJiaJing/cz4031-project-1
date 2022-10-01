@@ -165,32 +165,38 @@ int main(){
                 // int index = 0;
                 // while(index<search_results_addresses.size()) 
                 // {
-                //     char* current_block_address = data.record_addr_to_blk_addr(search_results_addresses[index])
+                //     char* current_block_address = data.record_addr_to_blk_addr(search_results_addresses[index]);
                 //     if (current_block_address == prev_block_address)
                 //     {
                 //         //retrieve the avg rating of the individual record
-                //             Record temp_record = data.retrieve_record(char*rarr)
-                //             average_rating += temp_record.rating2Dec()
-                //             record_count += 1
+                //             Record temp_record = data.retrieve_record(char*rarr);
+                //             average_rating += temp_record.rating2Dec();
+                //             record_count += 1;
                 //     }
                 //     else{
                 //         if(block_count<5)
                 //         {
-                //             vector<Record> contents_of_block = data.retrieve_blk(current_block_address)
-                //             //print of the contents of the block using while/for loop
+                //             cout << "This is block ID " <<  data.get_blk_id(current_block_address) <<endl;
+                //             vector<Record> contents_of_block = data.retrieve_blk(current_block_address);
+                //             for (int i = 0; i< contents_of_block.size() ; i++)
+                //              {
+                //                  cout << "Tconst is " << contents_of_block[i].getTconst() << "Average Rating is " << contents_of_block[i].rating2Dec() <<  "Number of votes is " << contents_of_block[i].getNumOfVotes()<<endl;
+                //              }
                 //         }
-                //         Record temp_record = data.retrieve_record(char*rarr)
-                //         average_rating += temp_record.rating2Dec()
+                //         Record temp_record = data.retrieve_record(char*rarr);
+                //         average_rating += temp_record.rating2Dec();
                 //         // increment record count no matter what, but block count only if its not consecutively the same
-                //         record_count += 1
-                //         block_count +=1
+                //         record_count += 1;
+                //         block_count +=1;
                 //     }
                 //     //change the prev to current for next loop
-                //     prev_block_address = current_block_address
+                //     prev_block_address = current_block_address;
+                //      index++;
                 // }
-                // cout<< "Number of blocks accessed is " << block_count;
+                // cout<< "Number of blocks accessed is " << block_count<< endl;
                 // //the contents of first 5 printed out beforehand in the if portion
-                // cout << "Average rating of all the recors accesed is " << average_rating/record_count;
+                // cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
+                
 
                 break;
             }
@@ -198,8 +204,6 @@ int main(){
             {
                 // code to run experiment 4
                 cout << "Run experiment 4\n";
-                
-                
                 
                 
                 //Data block portion fo teh code
@@ -212,32 +216,37 @@ int main(){
                 // int index = 0;
                 // while(index<search_results_addresses.size()) 
                 // {
-                //     char* current_block_address = data.record_addr_to_blk_addr(search_results_addresses[index])
+                //     char* current_block_address = data.record_addr_to_blk_addr(search_results_addresses[index]);
                 //     if (current_block_address == prev_block_address)
                 //     {
                 //         //retrieve the avg rating of the individual record
-                //             Record temp_record = data.retrieve_record(char*rarr)
-                //             average_rating += temp_record.rating2Dec()
-                //             record_count += 1
+                //             Record temp_record = data.retrieve_record(char*rarr);
+                //             average_rating += temp_record.rating2Dec();
+                //             record_count += 1;
                 //     }
                 //     else{
                 //         if(block_count<5)
                 //         {
-                //             vector<Record> contents_of_block = data.retrieve_blk(current_block_address)
-                //             //print of the contents of the block using while/for loop
+                //             cout << "This is block ID " <<  data.get_blk_id(current_block_address) <<endl;
+                //             vector<Record> contents_of_block = data.retrieve_blk(current_block_address);
+                //             for (int i = 0; i< contents_of_block.size() ; i++)
+                //              {
+                //                  cout << "Tconst is " << contents_of_block[i].getTconst() << "Average Rating is " << contents_of_block[i].rating2Dec() <<  "Number of votes is " << contents_of_block[i].getNumOfVotes()<<endl;
+                //              }
                 //         }
-                //         Record temp_record = data.retrieve_record(char*rarr)
-                //         average_rating += temp_record.rating2Dec()
+                //         Record temp_record = data.retrieve_record(char*rarr);
+                //         average_rating += temp_record.rating2Dec();
                 //         // increment record count no matter what, but block count only if its not consecutively the same
-                //         record_count += 1
-                //         block_count +=1
+                //         record_count += 1;
+                //         block_count +=1;
                 //     }
                 //     //change the prev to current for next loop
-                //     prev_block_address = current_block_address
+                //     prev_block_address = current_block_address;
+                //      index++;
                 // }
-                // cout<< "Number of blocks accessed is " << block_count;
+                // cout<< "Number of blocks accessed is " << block_count<< endl;
                 // //the contents of first 5 printed out beforehand in the if portion
-                // cout << "Average rating of all the recors accesed is " << average_rating/record_count;
+                // cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
                 break;
             }
             case '5':
