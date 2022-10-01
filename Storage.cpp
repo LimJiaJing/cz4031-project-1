@@ -175,3 +175,7 @@ int Storage::get_allocated_nof_blk() {
 int Storage::get_allocated_size() {
     return allocated_size;
 }
+
+void* Storage::get_storage_ptr() {
+    return storage_ptr;
+}
