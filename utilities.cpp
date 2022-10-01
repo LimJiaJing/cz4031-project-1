@@ -22,6 +22,9 @@ void RunExperiment1(Storage *data);
 void RunExperiment2(Storage *data, BPlusTree *bPlusTree);
 void RunExperiment3(Storage* data);
 void RunExperiment4(Storage* data);
+void RunExperiment2(Storage *data, BPlusTree *bPlusTree);
+void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree);
+void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size);
 
 int main(){
     char sel1;
@@ -204,8 +207,8 @@ void RunExperiment2(Storage *data, BPlusTree *bPlusTree)
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* data)
 { 
-  // vector<char*> record_addresses = get_all_record_addr(bPlusTree, 500);
-  // retrieve_search_statistics(data, record_addresses);
+//   vector<char*> record_addresses = get_all_record_addr(bPlusTree, 500);
+//   retrieve_search_statistics(data, record_addresses);
 }
 
 void RunExperiment4(Storage* data)
@@ -218,20 +221,9 @@ void RunExperiment4(Storage* data)
 // experiment 1 helper code
 void store_records(Storage *data)
 {
-    Record test(1, (int16_t)55, 5);
-    data->insert_item(&test, RECORD_SIZE);
-    data->delete_item((char *)data->storage_ptr, RECORD_SIZE);
-
-    // ifstream testfile("data.tsv");
-    // string testline;
-
-    // this commeneted out block is to find out number of records im working on a dynamic one but this one works fine like so it works but not best implementation
-    // int numofrecords= -1;
-    // while (getline(testfile, testline))
-    // {
-    //     numofrecords+=1;
-    // }
-    // cout<< numofrecords;
+    // Record test(1, (int16_t)55, 5);
+    // data->insert_item(&test, RECORD_SIZE);
+    // data->delete_item((char *)data->storage_ptr, RECORD_SIZE);
     // actual number of record is 1070318
     int skip_header = 0;
     // for testing purposes
