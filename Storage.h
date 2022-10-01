@@ -22,6 +22,7 @@ public:
 
     Storage(){};
     Storage(unsigned int storage_size, unsigned int blk_size);
+    Storage* addr_of_object(void) { return this; }
     pair<int, char*> get_available_ptr(int store_size);
     bool allocate_block();
     void release_blk();

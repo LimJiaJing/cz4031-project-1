@@ -18,6 +18,10 @@
 using namespace std;
 
 void store_records(Storage* data);
+void RunExperiment1(Storage *data);
+void RunExperiment2(Storage *data, BPlusTree *bPlusTree);
+void RunExperiment3(Storage* data);
+void RunExperiment4(Storage* data);
 
 int main(){
     char sel1;
@@ -58,9 +62,9 @@ int main(){
     cout << "Initializing block size to " << blockSize << "B...\n";
     //code to initialize block size to 200B
     
-    int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
+    storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
     int reservation = 1000000;
-    data = &Storage(storage_size + reservation, blockSize);
+    data = Storage(storage_size + reservation, blockSize).addr_of_object();
     cout << "Initialization complete. Block size has been set to " << blockSize << "B.\n";
     cout << "Allocation complete. Disk storage of size " << ((storage_size + reservation) / (double)1000000) << "MB is now allocated.\n";
     cout << "Allocated storage is now empty, please run experiment 1 to load data.\n";
@@ -125,7 +129,7 @@ int main(){
                 int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
                 int reservation = 1000000;
                 cout << "Changing database block size to " << blockSize << "B...\n";
-                data = &Storage(storage_size + reservation, blockSize);
+                data = Storage(storage_size + reservation, blockSize).addr_of_object();
                 cout << "Change complete. Block size has been set to " << blockSize << "B.\n";
                 cout << "Allocation complete. Disk storage of size " << ((storage_size+reservation)/(double)1000000) << "MB is now allocated.\n";
                 
@@ -141,7 +145,7 @@ int main(){
             case '2':
             {
                 cout << "Running experiment 2...\n";
-                experiment_2(data, bPlusTree);
+                RunExperiment2(data, bPlusTree);
                 cout << "Completed experiment 2...\n";
                 break;
             }
@@ -191,7 +195,7 @@ void RunExperiment1(Storage *data)
     cout << "Loading data complete.\n";
 }
 
-BPlusTree *experiment_2(Storage *data, BPlusTree *bPlusTree)
+void RunExperiment2(Storage *data, BPlusTree *bPlusTree)
 {
     build_BPlus_tree(data, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, data->get_blk_size());
