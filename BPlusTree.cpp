@@ -389,7 +389,8 @@ bool CLeafNode::Insertdata(KEY_TYPE value, int* rdata) //change the data type
 
     // 把数据存入当前位置
     m_Datas[i] = value;
-     Parray* temp = new Parray(maxnum);
+   ;  //calculation funtion
+    Parray* temp = new Parray(maxnum);
     temp->insertarray(rdata);
     m_Pointers[i] = temp;
     m_Count++;
@@ -502,12 +503,14 @@ bool CLeafNode::Combine(CLeafNode* pNode)
 
     return true;
 }
-BPlusTree::BPlusTree()
+BPlusTree::BPlusTree(int Order, short int maxnum1 )
 {
     m_Depth = 0;
     m_Root = NULL;
     m_pLeafHead = NULL;
     m_pLeafTail = NULL;
+    ORDER_V = Order;
+    maxnum = maxnum1;
 }
 BPlusTree::~BPlusTree()
 {
@@ -1238,3 +1241,4 @@ void Parray::cleararray(){
   {return;}
   return ;
 }
+
