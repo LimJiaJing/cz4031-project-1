@@ -345,18 +345,18 @@ CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
     ORDER_V = MAX_KEYS / 2;
     maxnum = maxnum1;
     m_Type = NODE_TYPE_LEAF;
-    KEY_TYPE m_Datas[MAX_KEYS];
-    cout << "size of m_datas in constructor " << sizeof(m_Datas) / sizeof(int) << "\n";
+    m_Datas = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
     cout << "MAXNUMDATA" << MAX_KEYS << "\n";
     Parray* m_Pointers[MAXNUM_POINTER-1];
     maxnum = maxnum1;
     for (int i = 0; i < MAX_KEYS; i++)
     {
-        m_Datas[i] = INVALID;
+        m_Datas[i] = 0;
         m_Pointers[i] = nullptr;
         delete m_Pointers[i];
 
     }
+    cout << "initial size: " << sizeof(m_Datas)/sizeof(int) << "\n";
 
     m_pPrevNode = nullptr;
     m_pNextNode = nullptr;
@@ -372,18 +372,15 @@ CLeafNode::~CLeafNode()
 }
 
 // 在叶子结点中插入数据
-bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata) 
+bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
 {
     int i,j;
     // 找到要插入数据的位置
-    cout << "size: " << sizeof(this->m_Datas)/sizeof(i) << "\n";
-    for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++)
-    {
-        cout << "size of m_Datas" << sizeof(m_Datas) / sizeof(m_Datas[0]) << "\n";
-        cout << "m_Count = " << m_Count << "\n";
-        cout << "value of i = "<<i <<"\n";
-    }
-     if(value==m_Datas[i]){
+    for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
+    cout << "size: " << m_Datas[0] << "\n";
+    cout<< "value" << value;
+     if(value == m_Datas[i]){
+        cout<<"test";
         (*m_Pointers[i]).insertarray(rdata);
           return true;
      }
@@ -399,7 +396,6 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
         m_Datas[j] = m_Datas[j - 1];
        m_Pointers[j] = m_Pointers[j-1];
     }
-
     // 把数据存入当前位置
     m_Datas[i] = value;
    ;  //calculation funtion
@@ -518,7 +514,7 @@ bool CLeafNode::Combine(CLeafNode* pNode)
 }
 BPlusTree::BPlusTree(int Order, short int maxnum1 )
 {
-    
+
     m_Depth = 0;
     m_Root = nullptr;
     m_pLeafHead = nullptr;
@@ -617,7 +613,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 (4) 叶子结点已满，且其父结点已满。需要首先把叶子结点分裂，然后选择插入原结点或新结点，接着把父结点分裂，再修改祖父结点的指针。
     因为祖父结点也可能满，所以可能需要一直递归到未满的祖先结点为止。
 */
-bool BPlusTree::Insert(KEY_TYPE data, Record* rdata) 
+bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
 {
     // 检查是否重复插入
     cout << "Entered insert in BPlusTree\n";
