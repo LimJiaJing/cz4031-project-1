@@ -348,7 +348,7 @@ CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
     maxnum = maxnum1;
     m_Type = NODE_TYPE_LEAF;
     m_Datas = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
-    cout << "MAXNUMDATA" << MAX_KEYS << "\n";
+    // cout << "MAXNUMDATA" << MAX_KEYS << "\n";
     m_Pointers = (Parray**)malloc((MAXNUM_POINTER-1) * sizeof(Parray*));
     maxnum = maxnum1;
     for (int i = 0; i < MAX_KEYS; i++)
@@ -358,7 +358,7 @@ CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
         delete m_Pointers[i];
 
     }
-    cout << "initial size: " << sizeof(m_Datas)/sizeof(int) << "\n";
+    // cout << "initial size: " << sizeof(m_Datas)/sizeof(int) << "\n";
 
     m_pPrevNode = nullptr;
     m_pNextNode = nullptr;
@@ -379,10 +379,10 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     int i,j;
     // 找到要插入数据的位置
     for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
-    cout << "size: " << m_Datas[0] << "\n";
-    cout<< "value" << value;
+    // cout << "size: " << m_Datas[0] << "\n";
+    // cout<< "value" << value;
      if(value == m_Datas[i]){
-        cout<<"test";
+        // cout<<"test";
         m_Pointers[i]->insertarray(rdata);
           return true;
      }
@@ -403,9 +403,7 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
    ;  //calculation funtion
     Parray* temp = new Parray(maxnum);
     temp->insertarray(rdata);
-    cout<<"success1";
     m_Pointers[i] = temp;
-    cout<<"success2";
     m_Count++;
     // 返回成功
     return true;
@@ -541,7 +539,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     int offset = 0;
     if (nullptr != sPath)
     {
-        (void)sprintf(sPath+offset, "The serach path is:");
+        (void)sprintf(sPath+offset, "The search path is:");
         offset+=19;
     }
 
@@ -572,7 +570,6 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     // 没找到
     if (nullptr == pNode)
     {
-        cout << "pNode was a nullpointer\n";
         return false;
     }
 
@@ -620,7 +617,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
 {
     // 检查是否重复插入
-    cout << "Entered insert in BPlusTree\n";
+    // cout << "Entered insert in BPlusTree\n";
     bool found = Search(data, nullptr);
     //if (true == found)
     //{;}
@@ -633,18 +630,18 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
     // 查找理想的叶子结点
     CLeafNode* pOldNode = SearchLeafNode(data);
 
-    if (pOldNode == nullptr)
-    {
-        cout << "Correct, p0ldNode is a nullptr(should only print this once)\n";
-    }
-    else{
-        cout << "Wrong, pOldNode is returned wrongly (unless it has alr returned nullptr once)\n";
-    }
+    // if (pOldNode == nullptr)
+    // {
+    //     cout << "Correct, p0ldNode is a nullptr(should only print this once)\n";
+    // }
+    // else{
+    //     cout << "Wrong, pOldNode is returned wrongly (unless it has alr returned nullptr once)\n";
+    // }
 
     // 如果没有找到，说明整个树是空的，生成根结点
     if (pOldNode == nullptr)
     {
-        cout << "entered condition check for pOldNode\n";
+        // cout << "entered condition check for pOldNode\n";
         pOldNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1, maxnum);
         m_pLeafHead = pOldNode;
         m_pLeafTail = pOldNode;
@@ -1276,7 +1273,6 @@ bool Parray::insertarray(Record* Ppointer){
         return false;
         }
     int asize = this->maxnum;
-    cout<<"??????";
     if(num>=asize)
        {
         if((this->next) == nullptr)
@@ -1288,7 +1284,6 @@ bool Parray::insertarray(Record* Ppointer){
          this->next->insertarray(Ppointer);
        return true;
        }
-       cout<<"num"<<num<<endl;
    Rpointer[num] = Ppointer;
    num++;
    return true;

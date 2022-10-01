@@ -67,12 +67,12 @@ int main()
         blockSize = 500;
     }
     else {
-        cout << "!!!!!!!!This part of the code should never run.\n";
+        cout << "This part of the code should never run!!\n";
     }
 
     cout << "Initializing block size to " << blockSize << "B...\n";
     //code to initialize block size to 200B
-    
+
     storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
     int reservation = 1000000;
     storage = Storage(storage_size + reservation, blockSize).addr_of_object();
@@ -131,7 +131,7 @@ int main()
                 }
                 else
                 {
-                    cout << "!!!!!!!!This part of the code should never run";
+                    cout << "This part of the code should never run!!";
                 }
 
                 cout << "Deallocating storage...\n";
@@ -143,7 +143,7 @@ int main()
                 storage = Storage(storage_size + reservation, blockSize).addr_of_object();
                 cout << "Change complete. Block size has been set to " << blockSize << "B.\n";
                 cout << "Allocation complete. Disk storage of size " << ((storage_size+reservation)/(double)1000000) << "MB is now allocated.\n";
-                
+
                 break;
             }
             case '1':
@@ -175,7 +175,7 @@ int main()
                 break;
             }
             case '5':
-             {   
+             {
                 cout << "Running experiment 5...\n";
                 // code to run experiment 5
                 RunExperiment5(storage, bPlusTree, 120);
@@ -216,7 +216,7 @@ BPlusTree* RunExperiment2(Storage *storage)
 
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* storage)
-{ 
+{
   vector<char*> record_addresses = get_all_record_addr(bPlusTree, 120);
   retrieve_search_statistics(storage, record_addresses);
 }
@@ -237,17 +237,12 @@ void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key)
 // experiment 1 helper code
 void store_records(Storage *storage)
 {
-    // Record test(1, (int16_t)55, 5);
-    // storage->insert_item(&test, RECORD_SIZE);
-    // storage->delete_item((char *)storage->storage_ptr, RECORD_SIZE);
-    // actual number of record is 1070318
     int skip_header = 0;
     // for testing purposes
     int record_number = 0;
-    // cout<< "ok";
     ifstream infile("data.tsv");
     string line;
-    cout << storage->blk_size << endl;
+    cout << storage->get_blk_size() << endl;
     while (getline(infile, line))
     {
         if (skip_header == 0)
@@ -280,10 +275,7 @@ void store_records(Storage *storage)
                 numofvotes = stoi(string_component);
             }
         }
-        // storing in the pointer array
         Record temp(name, (int16_t)average_rating_int, numofvotes);
-        // displaying the stored value
-        // cout <<  temp.getTconst() << "\t"<<  temp.rating2Dec() << "\t"<<  temp.getNumOfVotes();
 
         storage->insert_item(&temp, RECORD_SIZE);
         cout << "\n";
@@ -297,9 +289,9 @@ void store_records(Storage *storage)
 
     cout << "Total storage space: " << storage->get_storage_size() << " Byte" << endl;
     cout << "Block size: " << storage->get_blk_size() << " Bytes" << endl;
-    cout << "Record size: " << RECORD_SIZE << " Btyes" << endl;
+    cout << "Record size: " << RECORD_SIZE << " Bytes" << endl;
     cout << "Allocated number of blocks: " << storage->get_allocated_nof_blk() << endl;
-    cout << "Allocated size: " << storage->allocated_size << endl;
+    cout << "Allocated size: " << storage->get_allocated_size() << endl;
 
     return;
 }
@@ -310,7 +302,7 @@ void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
     cout << "check ORDER_V" << bPlusTree->ORDER_V << "\n";
 
     int offset = storage->get_blk_size();
-    char *curr_block_ptr = (char *)storage->storage_ptr;
+    char *curr_block_ptr = (char *)storage->get_storage_ptr();
     int num_allocated_blocks = storage->get_allocated_nof_blk();
     for (int i = 0; i < num_allocated_blocks; i++)
     {
@@ -319,11 +311,11 @@ void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
         {
             Record curr_record = curr_block_records.at(j);
             int numVotes = curr_record.getNumOfVotes();
-            cout << "first call to insert\n";
+            // cout << "first call to insert\n";
             char *original_record_pointer = curr_block_ptr + j * (sizeof(Record));
-            cout << "size of record " << sizeof(Record) << "\n";
-            cout << "before cast" << (void *)original_record_pointer << "\n";
-            cout << "after cast" << (Record *)original_record_pointer << "\n";
+            // cout << "size of record " << sizeof(Record) << "\n";
+            // cout << "before cast" << (void *)original_record_pointer << "\n";
+            // cout << "after cast" << (Record *)original_record_pointer << "\n";
             bPlusTree->Insert(numVotes, (Record*)original_record_pointer);
         }
         curr_block_ptr += offset;
@@ -343,7 +335,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
     }
     if (height)
     {
-        cout << "Height of B+ tree"; // write in report the definition of height, is root's height = 0 or 1? Also, do we count the array level as a level?
+        cout << "Height of B+ tree";
     }
     if (content)
     {
@@ -374,8 +366,8 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
         int i = 1;
         for (i = 1; (i <= curr_node->GetCount()); i++)
         {
-            cout << "element " << i << " = " << curr_node->GetElement(i) << "\n";
-            cout << "current key = " << curr_key << "\n";
+            // cout << "element " << i << " = " << curr_node->GetElement(i) << "\n";
+            // cout << "current key = " << curr_key << "\n";
             int curr_key_in_node = curr_node->GetElement(i);
             if (curr_key_in_node >= start && curr_key_in_node <= end){
                 parrays.push_back(curr_node->GetPointer1(i));
@@ -386,7 +378,7 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
                 break;
             }
         }
-        cout << "size of parrays " << parrays.size() << "\n";
+        // cout << "size of parrays " << parrays.size() << "\n";
         curr_node = curr_node->m_pNextNode;
         if (curr_node == nullptr){
             break;
@@ -409,7 +401,7 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
             curr_parray = curr_parray->next;
         } while (curr_parray!=nullptr);
     }
-    cout << "number of record address:" << record_addr.size() << "\n";
+    // cout << "number of record address:" << record_addr.size() << "\n";
     return record_addr;
 }
 void retrieve_search_statistics(Storage *storage, vector<char*> search_results_addresses)
@@ -433,10 +425,11 @@ void retrieve_search_statistics(Storage *storage, vector<char*> search_results_a
             if(block_count<5)
             {
                 cout << "This is block number " << block_count <<" and the block ID is " <<  storage->get_blk_id(current_block_address) <<endl;
+                cout <<"Number of votes in the block are"<<endl;
                 vector<Record> contents_of_block = storage->retrieve_blk(current_block_address);
                 for (int i = 0; i< contents_of_block.size() ; i++)
                  {
-                     cout << "Tconst is " << contents_of_block[i].getTconst() << "Average Rating is " << contents_of_block[i].rating2Dec() <<  "Number of votes is " << contents_of_block[i].getNumOfVotes()<<endl;
+                     cout <<contents_of_block[i].getNumOfVotes()<<endl;
                  }
             }
             Record temp_record = storage->retrieve_record(search_results_addresses[index]);
@@ -449,9 +442,9 @@ void retrieve_search_statistics(Storage *storage, vector<char*> search_results_a
         prev_block_address = current_block_address;
          index++;
     }
-    cout<< "Number of blocks accessed is " << block_count<< endl;
+    cout<< "Number of Unique blocks accessed is " << block_count<< endl;
     //the contents of first 5 printed out beforehand in the if portion
-    cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
+    cout << "Average rating of all the records accessed is " << average_rating/record_count <<endl;
 
     return;
 }
