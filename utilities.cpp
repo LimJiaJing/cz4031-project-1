@@ -384,46 +384,46 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
 
 //     return record_addr;
 // }
-void retrieve_search_statistics(Storage *data, vector<Record*> search_results_addresses)
+void retrieve_search_statistics(Storage *data, vector<char*> search_results_addresses)
 {
-    // int block_count = 0;
-    // int record_count = 0;
-    // float average_rating = 0;
-    // char* prev_block_address = 0;
-    // int index = 0;
-    // while(index<search_results_addresses.size())
-    // {
-    //     char* current_block_address = data->record_addr_to_blk_addr(search_results_addresses[index]);
-    //     if (current_block_address == prev_block_address)
-    //     {
-    //         //retrieve the avg rating of the individual record
-    //             Record temp_record = data->retrieve_record(char*rarr);
-    //             average_rating += temp_record.rating2Dec();
-    //             record_count += 1;
-    //     }
-    //     else{
-    //         if(block_count<5)
-    //         {
-    //             cout << "This is block number " << block_count <<" and the block ID is " <<  data->get_blk_id(current_block_address) <<endl;
-    //             vector<Record> contents_of_block = data->retrieve_blk(current_block_address);
-    //             for (int i = 0; i< contents_of_block.size() ; i++)
-    //              {
-    //                  cout << "Tconst is " << contents_of_block[i].getTconst() << "Average Rating is " << contents_of_block[i].rating2Dec() <<  "Number of votes is " << contents_of_block[i].getNumOfVotes()<<endl;
-    //              }
-    //         }
-    //         Record temp_record = data->retrieve_record(char*rarr);
-    //         average_rating += temp_record.rating2Dec();
-    //         // increment record count no matter what, but block count only if its not consecutively the same
-    //         record_count += 1;
-    //         block_count +=1;
-    //     }
-    //     //change the prev to current for next loop
-    //     prev_block_address = current_block_address;
-    //      index++;
-    // }
-    // cout<< "Number of blocks accessed is " << block_count<< endl;
-    // //the contents of first 5 printed out beforehand in the if portion
-    // cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
+    int block_count = 0;
+    int record_count = 0;
+    float average_rating = 0;
+    char* prev_block_address = nullptr;
+    int index = 0;
+    while(index<search_results_addresses.size())
+    {
+        char* current_block_address = data->record_addr_to_blk_addr(search_results_addresses[index]);
+        if (current_block_address == prev_block_address)
+        {
+            //retrieve the avg rating of the individual record
+                Record temp_record = data->retrieve_record(search_results_addresses[index]);
+                average_rating += temp_record.rating2Dec();
+                record_count += 1;
+        }
+        else{
+            if(block_count<5)
+            {
+                cout << "This is block number " << block_count <<" and the block ID is " <<  data->get_blk_id(current_block_address) <<endl;
+                vector<Record> contents_of_block = data->retrieve_blk(current_block_address);
+                for (int i = 0; i< contents_of_block.size() ; i++)
+                 {
+                     cout << "Tconst is " << contents_of_block[i].getTconst() << "Average Rating is " << contents_of_block[i].rating2Dec() <<  "Number of votes is " << contents_of_block[i].getNumOfVotes()<<endl;
+                 }
+            }
+            Record temp_record = data->retrieve_record(search_results_addresses[index]);
+            average_rating += temp_record.rating2Dec();
+            // increment record count no matter what, but block count only if its not consecutively the same
+            record_count += 1;
+            block_count +=1;
+        }
+        //change the prev to current for next loop
+        prev_block_address = current_block_address;
+         index++;
+    }
+    cout<< "Number of blocks accessed is " << block_count<< endl;
+    //the contents of first 5 printed out beforehand in the if portion
+    cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
 
     return;
 }
