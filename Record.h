@@ -1,9 +1,11 @@
 #ifndef DATE_H
 #define DATE_H
 #include <cstdint>
+#include <string>
+#pragma pack(1)
 
 class Record {
-  private:    
+  private:
     int R_name;
     int16_t R_avgrating;
     int R_numofvotes;
@@ -13,6 +15,8 @@ class Record {
     int getName() { return R_name; }
     int16_t getAvgRating() { return R_avgrating; }
     int getNumOfVotes()  { return R_numofvotes; }
+    string getTconst() { return "tt" + string(7 - to_string(R_name).length(), '0') + to_string(R_name);}
+    double rating2Dec() {return (double)R_avgrating / 10;}
 };
 
 #endif
