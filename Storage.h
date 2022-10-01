@@ -7,7 +7,7 @@
 using namespace std;
 
 class Storage {
-public:
+private:
     unsigned int storage_size; //total available size of the memory for storing bl
     unsigned int blk_size; // the size of each block (in Bytes)
     unsigned int total_nof_blk; // total number of blocks available in the
@@ -20,6 +20,7 @@ public:
 
     vector<pair<char*, int>> deleted_slots; // record the start address and size of deleted slots
 
+public:
     Storage(){};
     Storage(unsigned int storage_size, unsigned int blk_size);
     Storage* addr_of_object(void) { return this; }
@@ -39,6 +40,7 @@ public:
     int get_blk_size();
     int get_allocated_nof_blk();
     int get_allocated_size();
+    void* get_storage_ptr();
 };
 
 #endif // STORAGE_H_INCLUDED

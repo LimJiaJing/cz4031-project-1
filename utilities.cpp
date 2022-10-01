@@ -72,7 +72,7 @@ int main()
 
     cout << "Initializing block size to " << blockSize << "B...\n";
     //code to initialize block size to 200B
-    
+
     storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
     int reservation = 1000000;
     storage = Storage(storage_size + reservation, blockSize).addr_of_object();
@@ -143,7 +143,7 @@ int main()
                 storage = Storage(storage_size + reservation, blockSize).addr_of_object();
                 cout << "Change complete. Block size has been set to " << blockSize << "B.\n";
                 cout << "Allocation complete. Disk storage of size " << ((storage_size+reservation)/(double)1000000) << "MB is now allocated.\n";
-                
+
                 break;
             }
             case '1':
@@ -175,7 +175,7 @@ int main()
                 break;
             }
             case '5':
-             {   
+             {
                 cout << "Running experiment 5...\n";
                 // code to run experiment 5
                 RunExperiment5(storage, bPlusTree, 120);
@@ -216,7 +216,7 @@ BPlusTree* RunExperiment2(Storage *storage)
 
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* storage)
-{ 
+{
   vector<char*> record_addresses = get_all_record_addr(bPlusTree, 120);
   retrieve_search_statistics(storage, record_addresses);
 }
@@ -247,7 +247,7 @@ void store_records(Storage *storage)
     // cout<< "ok";
     ifstream infile("data.tsv");
     string line;
-    cout << storage->blk_size << endl;
+    cout << storage->get_blk_size() << endl;
     while (getline(infile, line))
     {
         if (skip_header == 0)
@@ -299,7 +299,7 @@ void store_records(Storage *storage)
     cout << "Block size: " << storage->get_blk_size() << " Bytes" << endl;
     cout << "Record size: " << RECORD_SIZE << " Btyes" << endl;
     cout << "Allocated number of blocks: " << storage->get_allocated_nof_blk() << endl;
-    cout << "Allocated size: " << storage->allocated_size << endl;
+    cout << "Allocated size: " << storage->get_allocated_size() << endl;
 
     return;
 }
@@ -310,7 +310,7 @@ void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
     cout << "check ORDER_V" << bPlusTree->ORDER_V << "\n";
 
     int offset = storage->get_blk_size();
-    char *curr_block_ptr = (char *)storage->storage_ptr;
+    char *curr_block_ptr = (char *)storage->get_storage_ptr();
     int num_allocated_blocks = storage->get_allocated_nof_blk();
     for (int i = 0; i < num_allocated_blocks; i++)
     {
