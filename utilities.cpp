@@ -21,7 +21,7 @@ void store_records(Storage* data);
 int main(){
     char sel1;
     int blockSize;
-    //Storage data = Storage(0,0);
+    Storage data;
     int dsSize; //disk storage size, in MB
     cout << "Allocating disk storage of size " << dsSize << "MB...\n";
     //code to allocate memory
@@ -126,7 +126,7 @@ int main(){
                     Calculations cals;
                     int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
                     int reservation = 1000000;
-                    Storage data = Storage(storage_size + reservation, blockSize);
+                    data = Storage(storage_size + reservation, blockSize);
 
                     store_records(&data);
 
