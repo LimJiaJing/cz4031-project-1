@@ -133,6 +133,7 @@ vector<Record> Storage::retrieve_blk(char* blk_addr) {
     unsigned int space_accessed = 0;
     vector<Record> res = {};
 
+    //cout<<"The content of the block: ";
     while (space_accessed < blks[get_blk_id(blk_addr)].get_space_used()) {
         char* record_addr = blk_addr + space_accessed;
         int i, k;
@@ -140,11 +141,23 @@ vector<Record> Storage::retrieve_blk(char* blk_addr) {
         memcpy(&i, record_addr, 4);
         memcpy(&j, record_addr + 4, 2);
         memcpy(&k, record_addr + 6, 4);
-        Record r(i, j, k);
+        Record r = Record(i, j, k);
+        //cout<<r.getTconst()<<" ";
         res.push_back(r);
         space_accessed += RECORD_SIZE;
     }
     return res;
+}
+
+void Storage::clear_storage() {
+    free(storage_ptr);
+    allocated_nof_blk = 0;
+    allocated_size = 0;
+    cur_blk_id = -1;
+    deleted_slots = {};
+    free(blks);
+
+    return;
 }
 
 int Storage::get_storage_size() {
