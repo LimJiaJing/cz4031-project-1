@@ -26,7 +26,7 @@ class CNode
 {
 public:
     int ORDER_V;
-    int maxnum ;
+    short int maxnum;
     CNode();
     virtual ~CNode();
 
