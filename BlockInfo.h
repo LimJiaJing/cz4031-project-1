@@ -4,9 +4,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include "BlockInfo.h"
 
-using namespace std;
+using std::cout;
 class BlockInfo {
     public:
     unsigned int blk_size;

@@ -6,10 +6,10 @@
 #include "constants.h"
 #include <stdio.h>
 #include <string.h>
+#include "BlockInfo.cpp"
 #pragma pack(1)
 
-
-using namespace std;
+using std::cout;
 
 /* The total size of allocated storage is fixed.
     initialize 2 storages: data and index

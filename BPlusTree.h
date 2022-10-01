@@ -1,6 +1,6 @@
 #ifndef BPLUSTREE_H_INCLUDED
 #define BPLUSTREE_H_INCLUDED
-
+#include "Record.h"
 
 
 /* 键值的类型*/
@@ -15,9 +15,9 @@ NODE_TYPE_INTERNAL = 2,    // 内部结点
 NODE_TYPE_LEAF     = 3,    // 叶子结点
 };
 
-#define NULL 0
-#define INVALID 0
 
+#define INVALID 0
+#define NULLNODE 0
 #define FLAG_LEFT 1
 #define FLAG_RIGHT 2
 
@@ -26,6 +26,7 @@ class CNode
 {
 public:
     int ORDER_V;
+    int MAX_KEYS;
     short int maxnum;
     CNode();
     virtual ~CNode();
@@ -43,7 +44,7 @@ public:
     virtual void SetElement(int i, KEY_TYPE value) { }
 
     // 获取和设置某个指针，对中间结点指指针，对叶子结点无意义
-    virtual CNode* GetPointer(int i) {return NULL;}
+    virtual CNode* GetPointer(int i) {return nullptr;}
     virtual void SetPointer(int i, CNode* pointer) { }
 
     // 获取和设置父结点
@@ -104,7 +105,7 @@ public:
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -138,18 +139,18 @@ protected:
 class Parray{
 public:
    short int num;
-   int** Rpointer;
+   Record** Rpointer;
    Parray* next;
    short int maxnum;
 
    Parray(int blksize){
-   int* Rpointer[blksize]; //
-   next = NULL;
-   num = 0;
-   maxnum = blksize;
+   Record* Rpointer[blksize];
+   this->next = nullptr;
+   this->num = 0;
+   this->maxnum = blksize;
    }
-   bool insertarray(int* pointer);
-   int** getarray();
+   bool insertarray(Record* pointer);
+   Record** getarray();
    void cleararray();
 };
 
@@ -191,7 +192,7 @@ public:
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -207,7 +208,7 @@ public:
     // 删除数据
     bool Delete(KEY_TYPE value);
     // 插入数据
-    bool Insertdata(KEY_TYPE value, int* rdata);
+    bool Insertdata(KEY_TYPE value, Record* rdata);
 
     // 分裂结点
     KEY_TYPE Split(CLeafNode* pNode);
@@ -229,14 +230,16 @@ class BPlusTree
 {
 public:
     int ORDER_V;
+    int MAX_KEYS;
     short int maxnum;
     BPlusTree(int order, short int maxnum1);
     virtual ~BPlusTree();
+    BPlusTree *addr_of_object(void) { return this; }
 
     // 查找指定的数据
     bool Search(KEY_TYPE data, char* sPath);
     // 插入指定的数据
-    bool Insert(KEY_TYPE data, int* rdata);
+    bool Insert(KEY_TYPE data, Record* rdata);
     // 删除指定的数据
     bool Delete(KEY_TYPE data);
 
@@ -298,11 +301,9 @@ public:
     // 以下两个变量用于实现双向链表
     CLeafNode* m_pLeafHead;                 // 头结点
     CLeafNode* m_pLeafTail;                   // 尾结点
-
-protected:
-
     // 为插入而查找叶子结点
-    CLeafNode* SearchLeafNode(KEY_TYPE data);
+    CLeafNode *SearchLeafNode(KEY_TYPE data);
+    
     //插入键到中间结点
     bool InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pRightSon);
     // 在中间结点中删除键

@@ -2,12 +2,15 @@
 #include "BPlusTree.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "Record.h"
 
+
+using std::cout;
 CNode::CNode()
 {
     m_Type = NODE_TYPE_LEAF;
     m_Count = 0;
-    m_pFather = NULL;
+    m_pFather = nullptr;
 
 }
 CNode::~CNode()
@@ -19,12 +22,12 @@ CNode::~CNode()
 CNode* CNode::GetBrother(int& flag)
 {
     CNode* pFather = GetFather();   //获取其父结点指针
-    if (NULL == pFather)
+    if (nullptr == pFather)
     {
-        return NULL;
+        return nullptr;
     }
 
-    CNode* pBrother = NULL;
+    CNode* pBrother = nullptr;
 
     for (int i = 1; i <= pFather->GetCount() + 1; i++)   //GetCount()表示获取数据或关键字数，要比指针数小1。
     {
@@ -57,7 +60,7 @@ void CNode::DeleteChildren()   //
             return;
         }
         CNode * pNode = GetPointer(i);
-        if (NULL != pNode)
+        if (nullptr != pNode)
         {
             pNode->DeleteChildren();
         }
@@ -68,26 +71,29 @@ void CNode::DeleteChildren()   //
 //将内部节点的关键字和指针分别初始化为0和空
 CInternalNode::CInternalNode(int MAXNUM_KEY, int MAXNUM_POINTER)
 {
-    KEY_TYPE m_Keys[MAXNUM_KEY];
+    MAX_KEYS = MAXNUM_KEY;
+    ORDER_V = MAX_KEYS / 2;
+
+    KEY_TYPE m_Keys[MAX_KEYS];
     CNode* m_Pointers[MAXNUM_POINTER];
     m_Type = NODE_TYPE_INTERNAL;
 
     int i = 0;
-    for (i = 0; i < MAXNUM_KEY; i++)
+    for (i = 0; i < MAX_KEYS; i++)
     {
         m_Keys[i] = INVALID;
     }
 
     for (i = 0; i < MAXNUM_POINTER; i++)
     {
-        m_Pointers[i] = NULL;
+        m_Pointers[i] = nullptr;
     }
 }
 CInternalNode::~CInternalNode()
 {
     for (int i = 0; i < (2*ORDER_V+1); i++)
     {
-        m_Pointers[i] = NULL;
+        m_Pointers[i] = nullptr;
     }
 }
 
@@ -149,7 +155,7 @@ bool CInternalNode::Delete(KEY_TYPE key)
     {
         m_Pointers[k] = m_Pointers[k + 1];
     }
-    m_Pointers[k] = NULL;
+    m_Pointers[k] = nullptr;
 
     m_Count--;
 
@@ -335,21 +341,25 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
 // 清除叶子结点中的数据
 CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
 {
+    MAX_KEYS = MAXNUM_DATA;
+    ORDER_V = MAX_KEYS / 2;
+    maxnum = maxnum1;
     m_Type = NODE_TYPE_LEAF;
-    KEY_TYPE m_Datas[MAXNUM_DATA];
+    KEY_TYPE m_Datas[MAX_KEYS];
+    cout << "size of m_datas in constructor " << sizeof(m_Datas) / sizeof(int) << "\n";
+    cout << "MAXNUMDATA" << MAX_KEYS << "\n";
     Parray* m_Pointers[MAXNUM_POINTER-1];
     maxnum = maxnum1;
-
-    for (int i = 0; i < MAXNUM_DATA; i++)
+    for (int i = 0; i < MAX_KEYS; i++)
     {
         m_Datas[i] = INVALID;
-        m_Pointers[i]->cleararray();
+        m_Pointers[i] = nullptr;
         delete m_Pointers[i];
 
     }
 
-    m_pPrevNode = NULL;
-    m_pNextNode = NULL;
+    m_pPrevNode = nullptr;
+    m_pNextNode = nullptr;
 }
 CLeafNode::~CLeafNode()
 {
@@ -357,27 +367,30 @@ CLeafNode::~CLeafNode()
     {
         m_Pointers[i]->cleararray();
         delete m_Pointers[i];
-        m_Pointers[i] = NULL;
+        m_Pointers[i] = nullptr;
     }
 }
 
 // 在叶子结点中插入数据
-bool CLeafNode::Insertdata(KEY_TYPE value, int* rdata) //change the data type
+bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata) 
 {
     int i,j;
-    // 如果叶子结点已满，直接返回失败
-    if (GetCount() >= 2*ORDER_V)
-    {
-        return false;
-    }
-
     // 找到要插入数据的位置
+    cout << "size: " << sizeof(this->m_Datas)/sizeof(i) << "\n";
     for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++)
     {
+        cout << "size of m_Datas" << sizeof(m_Datas) / sizeof(m_Datas[0]) << "\n";
+        cout << "m_Count = " << m_Count << "\n";
+        cout << "value of i = "<<i <<"\n";
     }
      if(value==m_Datas[i]){
         (*m_Pointers[i]).insertarray(rdata);
           return true;
+     }
+
+     if (GetCount() >= MAX_KEYS)
+     {
+         return false;
      }
 
     // 当前位置及其后面的数据依次后移，空出当前位置
@@ -505,12 +518,16 @@ bool CLeafNode::Combine(CLeafNode* pNode)
 }
 BPlusTree::BPlusTree(int Order, short int maxnum1 )
 {
+    
     m_Depth = 0;
-    m_Root = NULL;
-    m_pLeafHead = NULL;
-    m_pLeafTail = NULL;
-    ORDER_V = Order;
+    m_Root = nullptr;
+    m_pLeafHead = nullptr;
+    m_pLeafTail = nullptr;
+    MAX_KEYS = Order;
+    ORDER_V = Order/2;
     maxnum = maxnum1;
+    cout << "max_num_keys_in_node = " << ORDER_V
+         << "\n max pointers in parray = " << maxnum <<"\n";
 }
 BPlusTree::~BPlusTree()
 {
@@ -522,7 +539,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 {
     int i = 0;
     int offset = 0;
-    if (NULL != sPath)
+    if (nullptr != sPath)
     {
         (void)sprintf(sPath+offset, "The serach path is:");
         offset+=19;
@@ -530,7 +547,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 
     CNode * pNode = GetRoot();
     // 循环查找对应的叶子结点
-    while (NULL != pNode)
+    while (nullptr != pNode)
     {
         // 结点为叶子结点，循环结束
         if (NODE_TYPE_LEAF == pNode->GetType())
@@ -543,7 +560,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
         {
         }
 
-        if (NULL != sPath)
+        if (nullptr != sPath)
         {
             (void)sprintf(sPath+offset, " %3d -->", pNode->GetElement(1));
             offset+=8;
@@ -553,12 +570,13 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     }
 
     // 没找到
-    if (NULL == pNode)
+    if (nullptr == pNode)
     {
+        cout << "pNode was a nullpointer\n";
         return false;
     }
 
-    if (NULL != sPath)
+    if (nullptr != sPath)
     {
         (void)sprintf(sPath+offset, "%3d", pNode->GetElement(1));
         offset+=3;
@@ -575,7 +593,7 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     }
 
 
-    if (NULL != sPath)
+    if (nullptr != sPath)
     {
         if (true == found)
         {
@@ -599,10 +617,11 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 (4) 叶子结点已满，且其父结点已满。需要首先把叶子结点分裂，然后选择插入原结点或新结点，接着把父结点分裂，再修改祖父结点的指针。
     因为祖父结点也可能满，所以可能需要一直递归到未满的祖先结点为止。
 */
-bool BPlusTree::Insert(KEY_TYPE data, int* rdata)  //change the data type
+bool BPlusTree::Insert(KEY_TYPE data, Record* rdata) 
 {
     // 检查是否重复插入
-    bool found = Search(data, NULL);
+    cout << "Entered insert in BPlusTree\n";
+    bool found = Search(data, nullptr);
     //if (true == found)
     //{;}
     // for debug
@@ -613,23 +632,33 @@ bool BPlusTree::Insert(KEY_TYPE data, int* rdata)  //change the data type
 
     // 查找理想的叶子结点
     CLeafNode* pOldNode = SearchLeafNode(data);
-    // 如果没有找到，说明整个树是空的，生成根结点
-    if (NULL == pOldNode)
+
+    if (pOldNode == nullptr)
     {
-        pOldNode = new CLeafNode(2*ORDER_V, 2*ORDER_V+1, maxnum);
+        cout << "Correct, p0ldNode is a nullptr(should only print this once)\n";
+    }
+    else{
+        cout << "Wrong, pOldNode is returned wrongly (unless it has alr returned nullptr once)\n";
+    }
+
+    // 如果没有找到，说明整个树是空的，生成根结点
+    if (pOldNode == nullptr)
+    {
+        cout << "entered condition check for pOldNode\n";
+        pOldNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1, maxnum);
         m_pLeafHead = pOldNode;
         m_pLeafTail = pOldNode;
         SetRoot(pOldNode);
     }
-    if(found = true)
+    if(found)
     {
         pOldNode->Insertdata(data, rdata);
         return true;
     }
     // 叶子结点未满，对应情况1，直接插入
-    if (pOldNode->GetCount() < 2*ORDER_V)
+    if (pOldNode->GetCount() < MAX_KEYS)
     {
-         pOldNode->Insertdata(data,rdata);//change the data type
+         pOldNode->Insertdata(data,rdata);
     }
 
     // 原叶子结点已满，新建叶子结点，并把原结点后一半数据剪切到新结点
@@ -642,7 +671,7 @@ bool BPlusTree::Insert(KEY_TYPE data, int* rdata)  //change the data type
     pOldNode->m_pNextNode = pNewNode;
     pNewNode->m_pNextNode = pOldNext;
     pNewNode->m_pPrevNode = pOldNode;
-    if (NULL == pOldNext)
+    if (nullptr == pOldNext)
     {
         m_pLeafTail = pNewNode;
     }
@@ -666,7 +695,7 @@ bool BPlusTree::Insert(KEY_TYPE data, int* rdata)  //change the data type
     CInternalNode* pFather = (CInternalNode*)(pOldNode->GetFather());
 
     // 如果原结点是根节点，对应情况2
-    if (NULL == pFather)
+    if (nullptr == pFather)
     {
         CNode* pNode1 = new CInternalNode(2*ORDER_V, 2*ORDER_V+1);
         pNode1->SetPointer(1, pOldNode);                           // 指针1指向原结点
@@ -697,7 +726,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
     // 查找理想的叶子结点
     CLeafNode* pOldNode = SearchLeafNode(data);
     // 如果没有找到，返回失败
-    if (NULL == pOldNode)
+    if (nullptr == pOldNode)
     {
         return false;
     }
@@ -711,15 +740,15 @@ bool BPlusTree::Delete(KEY_TYPE data)
 
     // 获取父结点
     CInternalNode* pFather = (CInternalNode*)(pOldNode->GetFather());
-    if (NULL == pFather)
+    if (nullptr == pFather)
     {
         // 如果一个数据都没有了，删除根结点(只有根节点可能出现此情况)
         if (0 == pOldNode->GetCount())
         {
             delete pOldNode;
-            m_pLeafHead = NULL;
-            m_pLeafTail = NULL;
-            SetRoot(NULL);
+            m_pLeafHead = nullptr;
+            m_pLeafTail = nullptr;
+            SetRoot(nullptr);
         }
 
         return true;
@@ -747,7 +776,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
 
     // 兄弟结点填充度>50%，对应情况2A
     KEY_TYPE NewData = INVALID;
-    Parray* NewPointer = NULL;
+    Parray* NewPointer = nullptr;
     if (pBrother->GetCount() > ORDER_V)
     {
         if (FLAG_LEFT == flag)    // 兄弟在左边，移最后一个数据过来
@@ -797,7 +826,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
     // 情况2B
 
     // 父结点中要删除的键
-    KEY_TYPE NewKey = NULL;
+    KEY_TYPE NewKey = NULLNODE;
 
     // 把本结点与兄弟结点合并，无论如何合并到数据较小的结点，这样父结点就无需修改指针
 
@@ -809,7 +838,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
         CLeafNode* pOldNext = pOldNode->m_pNextNode;
         pBrother->m_pNextNode = pOldNext;
         // 在双向链表中删除结点
-        if (NULL == pOldNext)
+        if (nullptr == pOldNext)
         {
             m_pLeafTail = pBrother;
         }
@@ -828,7 +857,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
         CLeafNode* pOldNext = pBrother->m_pNextNode;
         pOldNode->m_pNextNode = pOldNext;
         // 在双向链表中删除结点
-        if (NULL == pOldNext)
+        if (nullptr == pOldNext)
         {
            m_pLeafTail = pOldNode;
         }
@@ -847,16 +876,16 @@ bool BPlusTree::Delete(KEY_TYPE data)
 void BPlusTree::ClearTree()
 {
     CNode* pNode = GetRoot();
-    if (NULL != pNode)
+    if (nullptr != pNode)
     {
         pNode->DeleteChildren();
 
         delete pNode;
     }
 
-    m_pLeafHead = NULL;
-    m_pLeafTail = NULL;
-    SetRoot(NULL);
+    m_pLeafHead = nullptr;
+    m_pLeafTail = nullptr;
+    SetRoot(nullptr);
 }
 
 // 旋转以重新平衡，实际上是把整个树重构一下,结果不理想，待重新考虑
@@ -865,7 +894,7 @@ void BPlusTree::ClearTree()
 //    BPlusTree* pNewTree = new BPlusTree;
 //    int i = 0;
 //    CLeafNode * pNode = m_pLeafHead;
-//    while (NULL != pNode)
+//    while (nullptr != pNode)
 //    {
 //        for (int i = 1; i <= pNode->GetCount(); i ++)
 //        {
@@ -882,11 +911,11 @@ void BPlusTree::ClearTree()
 bool BPlusTree::CheckTree()
 {
     CLeafNode * pThisNode = m_pLeafHead;
-    CLeafNode * pNextNode = NULL;
-    while (NULL != pThisNode)
+    CLeafNode * pNextNode = nullptr;
+    while (nullptr != pThisNode)
     {
         pNextNode = pThisNode->m_pNextNode;
-        if (NULL != pNextNode)
+        if (nullptr != pNextNode)
         {
            if (pThisNode->GetElement(pThisNode->GetCount()) > pNextNode->GetElement(1))
            {
@@ -902,7 +931,7 @@ bool BPlusTree::CheckTree()
 // 递归检查结点及其子树是否满足B+树的定义
 bool BPlusTree::CheckNode(CNode* pNode)
 {
-    if (NULL == pNode)
+    if (nullptr == pNode)
     {
         return true;
     }
@@ -949,7 +978,7 @@ bool BPlusTree::CheckNode(CNode* pNode)
 //void BPlusTree::PrintTree()
 //{
 //    CNode* pRoot = GetRoot();
-//    if (NULL == pRoot) return;
+//    if (nullptr == pRoot) return;
 //
 //    CNode* p1, *p2, *p3;
 //    int i, j, k;
@@ -962,7 +991,7 @@ bool BPlusTree::CheckNode(CNode* pNode)
 //    for (i = 1; i <= MAXNUM_POINTER; i++)
 //    {
 //        p1 = pRoot->GetPointer(i);
-//        if (NULL == p1) continue;
+//        if (nullptr == p1) continue;
 //        PrintNode(p1);
 //        total++;
 //        if (total%4 == 0) printf("\n | ");
@@ -972,11 +1001,11 @@ bool BPlusTree::CheckNode(CNode* pNode)
 //    for (i = 1; i <= MAXNUM_POINTER; i++)
 //    {
 //        p1 = pRoot->GetPointer(i);
-//        if (NULL == p1) continue;
+//        if (nullptr == p1) continue;
 //        for (j = 1; j <= MAXNUM_POINTER; j++)
 //        {
 //            p2 = p1->GetPointer(j);
-//            if (NULL == p2) continue;
+//            if (nullptr == p2) continue;
 //            PrintNode(p2);
  //           total++;
 //            if (total%4 == 0) printf("\n | ");
@@ -987,15 +1016,15 @@ bool BPlusTree::CheckNode(CNode* pNode)
  //   for (i = 1; i <= MAXNUM_POINTER; i++)
  //   {
  //       p1 = pRoot->GetPointer(i);
- // /      if (NULL == p1) continue;
+ // /      if (nullptr == p1) continue;
 //        for (j = 1; j <= MAXNUM_POINTER; j++)
 //        {
 //            p2 = p1->GetPointer(j);
-//            if (NULL == p2) continue;
+//            if (nullptr == p2) continue;
 //            for (k = 1; k <= MAXNUM_POINTER; k++)
 //            {
 //                p3 = p2->GetPointer(k);
-//                if (NULL == p3) continue;
+//                if (nullptr == p3) continue;
 //                PrintNode(p3);
 //                total++;
 //                if (total%4 == 0) printf("\n | ");
@@ -1007,7 +1036,7 @@ bool BPlusTree::CheckNode(CNode* pNode)
 // 打印某结点
 //void BPlusTree::PrintNode(CNode* pNode)
 //{
-//    if (NULL == pNode)
+//    if (nullptr == pNode)
 //    {
 //        return;
 //    }
@@ -1029,7 +1058,7 @@ CLeafNode* BPlusTree::SearchLeafNode(KEY_TYPE data)
 
     CNode * pNode = GetRoot();
     // 循环查找对应的叶子结点
-    while (NULL != pNode)
+    while (nullptr != pNode)
     {
         // 结点为叶子结点，循环结束
         if (NODE_TYPE_LEAF == pNode->GetType())
@@ -1055,7 +1084,7 @@ CLeafNode* BPlusTree::SearchLeafNode(KEY_TYPE data)
 //递归函数：插入键到中间结点
 bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pRightSon)
 {
-    if (NULL == pNode || NODE_TYPE_LEAF ==pNode->GetType())
+    if (nullptr == pNode || NODE_TYPE_LEAF ==pNode->GetType())
     {
         return false;
     }
@@ -1087,7 +1116,7 @@ bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pR
 
     CInternalNode* pFather = (CInternalNode*)(pNode->GetFather());
     // 直到根结点都满了，新生成根结点
-    if (NULL == pFather)
+    if (nullptr == pFather)
     {
         pFather = new CInternalNode(2*ORDER_V, 2*ORDER_V+1);
         pFather->SetPointer(1, pNode);                           // 指针1指向原结点
@@ -1117,7 +1146,7 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
 
     // 获取父结点
     CInternalNode* pFather = (CInternalNode*)(pNode->GetFather());
-    if (NULL == pFather)
+    if (nullptr == pFather)
     {
         // 如果一个数据都没有了，把根结点的第一个结点作为根结点
         if (0 == pNode->GetCount())
@@ -1184,7 +1213,7 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
     }
 
     // 父结点中要删除的键：兄弟结点都不大于50，则需要合并结点，此时父结点需要删除键
-    KEY_TYPE NewKey = NULL;
+    KEY_TYPE NewKey = NULLNODE;
 
     // 把本结点与兄弟结点合并，无论如何合并到数据较小的结点，这样父结点就无需修改指针
     if (FLAG_LEFT == flag)
@@ -1205,18 +1234,21 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
 }
 
 
-bool Parray::insertarray(int* Ppointer){
-   if(Ppointer== NULL)
-    {return false;}
-    int asize = maxnum;
+bool Parray::insertarray(Record* Ppointer){
+   if(Ppointer== nullptr)
+    {
+        return false;
+        }
+    int asize = this->maxnum;
     if(num>=asize)
-       {if(next == NULL)
+       {
+        if((this->next) == nullptr)
             {
-             Parray* newarray=new Parray(asize);
-             this->next=newarray;
-             newarray->insertarray(Ppointer);
+                Parray* newarray=new Parray(asize);
+                (this->next)=newarray;
+                newarray->insertarray(Ppointer);
              }
-         next->insertarray(Ppointer);
+         this->next->insertarray(Ppointer);
        return true;
        }
 
@@ -1226,18 +1258,20 @@ bool Parray::insertarray(int* Ppointer){
 
 }
 
-int** Parray::getarray(){
+Record** Parray::getarray(){
   return Rpointer;
 }
 
 void Parray::cleararray(){
-
-  if(this->next!=NULL)
-  {
-      next->cleararray();
-      delete next;
+    if (this==nullptr){
+        return;
+    }
+    if (nullptr != (this->next))
+    {
+        this->next->cleararray();
+        delete next;
   }
-  if(next == NULL)
+  if(next == nullptr)
   {return;}
   return ;
 }

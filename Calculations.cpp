@@ -3,7 +3,8 @@
 #include "Calculations.h"
 #include "constants.h"
 
-using namespace std;
+using std::cout;
+
 
 int Calculations::GetMaxNumOfRecordsPerBlock(int blockSize)
 {

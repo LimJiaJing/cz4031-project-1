@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <string>
 #pragma pack(1)
-
+using std::string;
+using std::__cxx11::to_string;
 class Record {
   private:
     int R_name;
