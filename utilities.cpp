@@ -115,6 +115,13 @@ int main(){
 
                 cout << "Changing database block size to " << blockSize << "B...\n";
                 // code to initialize database block size to 200B
+                data.clear_storage();
+                Calculations cals;
+                int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
+                int reservation = 1000000;
+                data = Storage(storage_size + reservation, blockSize);
+
+                store_records(&data);
                 cout << "Change complete. Block size has been set to " << blockSize << "B.\n";
                 break;
             }
