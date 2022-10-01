@@ -23,9 +23,7 @@ int main(){
     int blockSize;
     Storage data;
     int dsSize; //disk storage size, in MB
-    cout << "Allocating disk storage of size " << dsSize << "MB...\n";
-    //code to allocate memory
-    cout << "Allocation complete. Disk storage of size " << dsSize << "MB is now allocated.\n";
+    
     cout << "Please select block size. (Enter 1 or 2)\n";
     cout << "1. 200 B\n"
          << "2. 500 B\n";
@@ -56,8 +54,13 @@ int main(){
 
     cout << "Initializing block size to " << blockSize << "B...\n";
     //code to initialize block size to 200B
+    Calculations cals;
+    int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
+    int reservation = 1000000;
+    data = Storage(storage_size + reservation, blockSize);
     cout << "Initialization complete. Block size has been set to " << blockSize << "B.\n";
-
+    cout << "Allocation complete. Disk storage of size " << ((storage_size + reservation) / (double)1000000) << "MB is now allocated.\n";
+    cout << "Allocated storage is now empty, please run experiment 1 to load data.\n";
     char sel2 = 'n';
     while (sel2 != '6')
     {
@@ -113,16 +116,18 @@ int main(){
                     cout << "!!!!!!!!This part of the code should never run";
                 }
 
-                cout << "Changing database block size to " << blockSize << "B...\n";
-                // code to initialize database block size to 200B
+                cout << "Deallocating storage...\n";
                 data.clear_storage();
-                Calculations cals;
+                // code to initialize database block size to 200B
                 int storage_size = cals.GetMaxSizeOfRecordBlocks(blockSize);
                 int reservation = 1000000;
+                cout << "Changing database block size to " << blockSize << "B...\n";
                 data = Storage(storage_size + reservation, blockSize);
-
-                store_records(&data);
                 cout << "Change complete. Block size has been set to " << blockSize << "B.\n";
+                cout << "Allocation complete. Disk storage of size " << ((storage_size+reservation)/(double)1000000) << "MB is now allocated.\n";
+                cout << "Loading data...\n";
+                store_records(&data);
+                cout << "Loading data complete.\n";
                 break;
             }
             case '1':
