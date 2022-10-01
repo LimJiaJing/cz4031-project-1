@@ -28,13 +28,13 @@ int Calculations::GetMaxNumOfRecordBlocks(int blockSize)
 int Calculations::GetMaxNumOfKeysPerIndexBlock(int blockSize)
 {
     int numOfKeysForInternalNode = 1;
-    while (INTERNAL_NODE_INDEX_HEADER_SIZE + (numOfKeysForInternalNode * INDEX_KEY_SIZE) + ((numOfKeysForInternalNode + 1) * INDEX_POINTER_SIZE) <= blockSize)
+    while (INDEX_HEADER_SIZE + (numOfKeysForInternalNode * INDEX_KEY_SIZE) + ((numOfKeysForInternalNode + 1) * INDEX_POINTER_SIZE) <= blockSize)
     {
         numOfKeysForInternalNode++;
     }
 
     int numOfKeysForLeafNode = 1;
-    while (LEAF_NODE_INDEX_HEADER_SIZE + (numOfKeysForLeafNode * INDEX_KEY_SIZE) + ((numOfKeysForLeafNode + 1) * INDEX_POINTER_SIZE) <= blockSize)
+    while (INDEX_HEADER_SIZE + (numOfKeysForLeafNode * INDEX_KEY_SIZE) + ((numOfKeysForLeafNode + 2) * INDEX_POINTER_SIZE) <= blockSize)
     {
         numOfKeysForLeafNode++;
     }
@@ -118,4 +118,4 @@ int Calculations::GetTotalBlockSize(int blockSize)
 int Calculations::GetMaxNumOfPointersInLinkedListBlock(int blockSize)
 {
     return floor((blockSize - LINKED_LIST_POINTER_SIZE) / LINKED_LIST_POINTER_SIZE);
-}
+}   
