@@ -152,7 +152,7 @@ int main(){
                 // {
                 //     char* current_block_address = data.record_addr_to_blk_addr(char* rarr)
                 //     if (current_block_address == prev_block_address)
-                //     {       
+                //     {
                 //         //retrieve the avg rating of the individual record
                 //             Record temp_record = data.retrieve_record(char*rarr)
                 //             average_rating += temp_record.rating2Dec()
@@ -207,10 +207,10 @@ int main(){
     }
 }
 
-void store_records(Storage data) {
+void store_records(Storage* data) {
     Record test(1, (int16_t)55, 5);
-    data.insert_item(&test, RECORD_SIZE);
-    data.delete_item((char*) data.storage_ptr, RECORD_SIZE);
+    data->insert_item(&test, RECORD_SIZE);
+    data->delete_item((char*) data->storage_ptr, RECORD_SIZE);
 
     // ifstream testfile("data.tsv");
     // string testline;
