@@ -19,7 +19,7 @@ using std::cout;
 
 void store_records(Storage* storage);
 void RunExperiment1(Storage *storage);
-void RunExperiment2(Storage *storage, BPlusTree *bPlusTree);
+BPlusTree* RunExperiment2(Storage *storage);
 void RunExperiment3(Storage* storage);
 void RunExperiment4(Storage* storage);
 void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key);
@@ -28,7 +28,8 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
 void delete_records(Storage *storage, BPlusTree *bPlusTree, int key);
 void delete_key_in_index(BPlusTree *bPlusTree, int key);
 void delete_records_in_db(Storage *storage, vector<char *> record_addresses);
-
+vector<char *> get_all_record_addr(BPlusTree *bPlusTree, int start, int end = 0);
+void retrieve_search_statistics(Storage *storage, vector<char *> search_results_addresses);
 
 // global variables
 Calculations cals;
@@ -40,8 +41,6 @@ BPlusTree *bPlusTree;
 int main()
 {
     char sel1;
-    
-    
 
     cout << "Please select block size. (Enter 1 or 2)\n";
     cout << "1. 200 B\n"
@@ -157,7 +156,7 @@ int main()
             case '2':
             {
                 cout << "Running experiment 2...\n";
-                RunExperiment2(storage, bPlusTree);
+                bPlusTree = RunExperiment2(storage);
                 cout << "Completed experiment 2...\n";
                 break;
             }
@@ -207,24 +206,25 @@ void RunExperiment1(Storage *storage)
     cout << "Loading data complete.\n";
 }
 
-void RunExperiment2(Storage *storage, BPlusTree *bPlusTree)
-{ 
-    bPlusTree = BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize), cals.GetMaxNumOfPointersInLinkedListBlock(blockSize)).addr_of_object();
+BPlusTree* RunExperiment2(Storage *storage)
+{
+    BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize), cals.GetMaxNumOfPointersInLinkedListBlock(blockSize));
     build_BPlus_tree(storage, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, false);
+    return bPlusTree;
 }
 
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* storage)
 { 
-//   vector<char*> record_addresses = get_all_record_addr(bPlusTree, 500);
-//   retrieve_search_statistics(storage, record_addresses);
+  vector<char*> record_addresses = get_all_record_addr(bPlusTree, 17);
+  retrieve_search_statistics(storage, record_addresses);
 }
 
 void RunExperiment4(Storage* storage)
 {
-    // vector<char*> record_addresses = get_all_record_addr(bPlusTree, 500);
-    // retrieve_search_statistics(storage, record_addresses);
+    vector<char*> record_addresses = get_all_record_addr(bPlusTree, 0, 500);
+    retrieve_search_statistics(storage, record_addresses);
     // code for number and content of index nodes the process accesses
 }
 
@@ -348,9 +348,11 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
 }
 
 // experiment 3 and 4 helper code
-vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end = 0)
+vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
 {
+    cout << "end = " << end << "(should be 0 for experiment 3 and 40000 for experiment 4)\n";
     CLeafNode *start_node = bPlusTree->SearchLeafNode(start);
+    cout << "startnode stats: " << start_node->GetCount() << "\n";
     vector<char*> record_addr = {};
     vector<Parray*> parrays = {};
 
@@ -365,18 +367,19 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end = 0)
         int i = 1;
         for (i = 1; (i <= curr_node->GetCount()); i++)
         {
-            if (curr_key == curr_node->GetElement(i))
-            {
+            cout << "element " << i << " = " << curr_node->GetElement(i) << "\n";
+            cout << "current key = " << curr_key << "\n";
+            int curr_key_in_node = curr_node->GetElement(i);
+            if (curr_key_in_node >= start && curr_key_in_node <= end){
                 parrays.push_back(curr_node->GetPointer1(i));
             }
-            if (curr_key < end) {
-                curr_key++;
-            }
-            else {
+            if (curr_key_in_node > end)
+            {
                 flag_for_while = false;
                 break;
             }
         }
+        cout << "size of parrays " << parrays.size() << "\n";
         curr_node = curr_node->m_pNextNode;
         if (curr_node == nullptr){
             break;
@@ -397,7 +400,7 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end = 0)
             curr_parray = curr_parray->next;
         } while (curr_parray!=nullptr);
     }
-
+    cout << "number of record address:" << record_addr.size() << "\n";
     return record_addr;
 }
 void retrieve_search_statistics(Storage *storage, vector<char*> search_results_addresses)
