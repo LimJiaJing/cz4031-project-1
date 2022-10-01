@@ -74,7 +74,7 @@ CInternalNode::CInternalNode(int MAXNUM_KEY, int MAXNUM_POINTER)
     MAX_KEYS = MAXNUM_KEY;
     ORDER_V = MAX_KEYS / 2;
 
-    KEY_TYPE m_Keys[MAX_KEYS];
+    m_Keys = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
     m_Pointers = (CNode**)malloc(MAXNUM_POINTER * sizeof(CNode*));
     m_Type = NODE_TYPE_INTERNAL;
 
