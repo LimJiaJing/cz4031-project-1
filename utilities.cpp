@@ -22,11 +22,12 @@ void RunExperiment1(Storage *data);
 void RunExperiment2(Storage *data, BPlusTree *bPlusTree);
 void RunExperiment3(Storage* data);
 void RunExperiment4(Storage* data);
-void RunExperiment2(Storage *data, BPlusTree *bPlusTree);
+void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key);
 void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree);
-void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size);
+void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool parameter_n, bool num_nodes, bool height, bool content);
 
-int main(){
+int main()
+{
     char sel1;
     int blockSize;
     int storage_size;
@@ -170,6 +171,7 @@ int main(){
              {   
                 cout << "Running experiment 5...\n";
                 // code to run experiment 5
+                RunExperiment5(data, bPlusTree, 1000);
                 cout << "Completed experiment 5...\n";
                 break;
              }
@@ -190,7 +192,6 @@ int main(){
     }
 }
 
-
 void RunExperiment1(Storage *data)
 {
     cout << "Loading data...\n";
@@ -201,7 +202,7 @@ void RunExperiment1(Storage *data)
 void RunExperiment2(Storage *data, BPlusTree *bPlusTree)
 {
     build_BPlus_tree(data, bPlusTree);
-    report_bPlusTree_statistics(bPlusTree, data->get_blk_size());
+    report_bPlusTree_statistics(bPlusTree, data->get_blk_size(), true, true, true, false);
 }
 
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
@@ -216,6 +217,12 @@ void RunExperiment4(Storage* data)
     // vector<char*> record_addresses = get_all_record_addr(bPlusTree, 500);
     // retrieve_search_statistics(data, record_addresses);
     // code for number and content of index nodes the process accesses
+}
+
+void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key)
+{
+    delete_records(storage, bPlusTree, key);
+    report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), false, true, true, true);
 }
 
 // experiment 1 helper code
@@ -307,12 +314,25 @@ void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
     }
 }
 
-void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size)
+void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool parameter_n, bool num_nodes, bool height, bool content)
 {
     Calculations cals = Calculations();
-    cout << "Parameter n of B+ tree: " << cals.GetMaxNumOfKeysPerIndexBlock(block_size); // could change depending on BPlusTree/CNode attributes
-    cout << "Number of nodes of the B+ tree:";
-    cout << "Height of B+ tree"; // write in report the definition of height, is root's height = 0 or 1? Also, do we count the array level as a level?
+    if (parameter_n)
+    {
+        cout << "Parameter n of B+ tree: " << cals.GetMaxNumOfKeysPerIndexBlock(block_size); // could change depending on BPlusTree/CNode attributes
+    }
+    if (num_nodes)
+    {
+        cout << "Number of nodes of the B+ tree:";
+    }
+    if (height)
+    {
+        cout << "Height of B+ tree"; // write in report the definition of height, is root's height = 0 or 1? Also, do we count the array level as a level?
+    }
+    if (content)
+    {
+        // code to print content of root node and its first child node
+    }
 }
 
 // experiment 3 and 4 helper code
@@ -406,4 +426,36 @@ void retrieve_search_statistics(Storage *data, vector<Record*> search_results_ad
     // cout << "Average rating of all the recors accesed is " << average_rating/record_count <<endl;
 
     return;
+}
+// helper code for experiment 5
+void delete_records_in_db(Storage *storage, vector<char *> record_addresses)
+{
+
+    for (int i = 0; i < record_addresses.size(); i++)
+    {
+        storage->delete_item(record_addresses.at(i), sizeof(record_addresses.at(i)));
+    }
+}
+
+void delete_key_in_index(BPlusTree *bPlusTree, int key)
+{
+    bool res = bPlusTree->Delete(key);
+    if (res)
+    {
+        cout << "Deleted key " << key << " in B+ tree\n";
+    }
+    else
+    {
+        cout << "Failed to delete key " << key << " in B+ tree\n";
+    }
+}
+
+void delete_records(Storage *storage, BPlusTree *bPlusTree, int key)
+{
+    vector<char *> record_addresses = get_all_record_addr(bPlusTree, key);
+    cout << "Found all records with numVotes = " << key << "\n";
+    delete_records_in_db(storage, record_addresses); // this one can return a tuple detailing the number of times a node is deleted
+    cout << "Deleted all records with numVotes = " << key << "\n";
+    delete_key_in_index(bPlusTree, key);
+    cout << "Finished deleting records from storage and updating B+ tree\n";
 }
