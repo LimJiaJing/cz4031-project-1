@@ -232,7 +232,7 @@ public:
     short int maxnum;
     BPlusTree();
     virtual ~BPlusTree();
-
+    BPlusTree *addr_of_object(void) { return this; }
     // 查找指定的数据
     bool Search(KEY_TYPE data, char* sPath);
     // 插入指定的数据
