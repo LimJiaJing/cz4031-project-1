@@ -389,8 +389,7 @@ bool CLeafNode::Insertdata(KEY_TYPE value, int* rdata) //change the data type
 
     // 把数据存入当前位置
     m_Datas[i] = value;
-    int asize = 5;  //calculation funtion
-    Parray* temp = new Parray(asize);
+     Parray* temp = new Parray(maxnum);
     temp->insertarray(rdata);
     m_Pointers[i] = temp;
     m_Count++;
