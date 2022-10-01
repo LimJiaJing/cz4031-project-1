@@ -178,7 +178,7 @@ int main()
              {   
                 cout << "Running experiment 5...\n";
                 // code to run experiment 5
-                RunExperiment5(storage, bPlusTree, 1000);
+                RunExperiment5(storage, bPlusTree, 120);
                 cout << "Completed experiment 5...\n";
                 break;
              }
@@ -217,7 +217,7 @@ BPlusTree* RunExperiment2(Storage *storage)
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* storage)
 { 
-  vector<char*> record_addresses = get_all_record_addr(bPlusTree, 17);
+  vector<char*> record_addresses = get_all_record_addr(bPlusTree, 120);
   retrieve_search_statistics(storage, record_addresses);
 }
 
@@ -320,7 +320,11 @@ void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
             Record curr_record = curr_block_records.at(j);
             int numVotes = curr_record.getNumOfVotes();
             cout << "first call to insert\n";
-            bPlusTree->Insert(numVotes, &curr_record);
+            char *original_record_pointer = curr_block_ptr + j * (sizeof(Record));
+            cout << "size of record " << sizeof(Record) << "\n";
+            cout << "before cast" << (void *)original_record_pointer << "\n";
+            cout << "after cast" << (Record *)original_record_pointer << "\n";
+            bPlusTree->Insert(numVotes, (Record*)original_record_pointer);
         }
         curr_block_ptr += offset;
     }
@@ -352,6 +356,9 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
 {
     cout << "end = " << end << "(should be 0 for experiment 3 and 40000 for experiment 4)\n";
     CLeafNode *start_node = bPlusTree->SearchLeafNode(start);
+    if (start_node == nullptr){
+        cout << "This shouldnt happen";
+    }
     cout << "startnode stats: " << start_node->GetCount() << "\n";
     vector<char*> record_addr = {};
     vector<Parray*> parrays = {};
@@ -395,7 +402,9 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
             int num_pointers = curr_parray->num;
             Record** curr_array = curr_parray->getarray();
             for (int j = 0; j < num_pointers; j++){
-                record_addr.push_back((char*)curr_array[j]);
+                Record dummy = storage->retrieve_record((char*)curr_array[j]);
+                cout << dummy.getNumOfVotes();
+                record_addr.push_back((char*)(curr_array[j]));
             }
             curr_parray = curr_parray->next;
         } while (curr_parray!=nullptr);

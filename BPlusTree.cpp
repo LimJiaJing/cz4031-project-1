@@ -381,7 +381,7 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     cout<< "value" << value;
      if(value == m_Datas[i]){
         cout<<"test";
-        (*m_Pointers[i]).insertarray(rdata);
+        m_Pointers[i]->insertarray(rdata);
           return true;
      }
 
