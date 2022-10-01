@@ -78,7 +78,7 @@ public:
     // 获取和设置键值，对用户来说，数字从1开始，实际在结点中是从0开始的
     KEY_TYPE GetElement(int i)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             return m_Keys[i - 1];
         }
@@ -90,7 +90,7 @@ public:
 
     void SetElement(int i, KEY_TYPE key)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             m_Keys[i - 1] = key;
         }
@@ -99,7 +99,7 @@ public:
     // 获取和设置指针，对用户来说，数字从1开始
     CNode* GetPointer(int i)
     {
-        if ((i > 0 ) && (i <= (2*ORDER_V+1)))
+        if ((i > 0 ) && (i <= (MAX_KEYS+1)))
         {
             return m_Pointers[i - 1];
         }
@@ -111,7 +111,7 @@ public:
 
     void SetPointer(int i, CNode* pointer)
     {
-        if ((i > 0 ) && (i <= (2*ORDER_V+1)))
+        if ((i > 0 ) && (i <= (MAX_KEYS+1)))
         {
             m_Pointers[i - 1] = pointer;
         }
@@ -165,7 +165,7 @@ public:
     // 获取和设置数据
     KEY_TYPE GetElement(int i)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             return m_Datas[i - 1];
         }
@@ -177,7 +177,7 @@ public:
 
     void SetElement(int i, KEY_TYPE data)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             m_Datas[i - 1] = data;
         }
@@ -186,7 +186,7 @@ public:
 
       Parray* GetPointer1(int i)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             return m_Pointers[i - 1];
         }
@@ -198,7 +198,7 @@ public:
 
     void SetPointer1(int i, Parray* pointer)
     {
-        if ((i > 0 ) && (i <= 2*ORDER_V))
+        if ((i > 0 ) && (i <= MAX_KEYS))
         {
             m_Pointers[i - 1] = pointer;
         }
