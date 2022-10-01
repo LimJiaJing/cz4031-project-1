@@ -25,6 +25,9 @@ void RunExperiment4(Storage* data);
 void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key);
 void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree);
 void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool parameter_n, bool num_nodes, bool height, bool content);
+void delete_records(Storage *storage, BPlusTree *bPlusTree, int key);
+void delete_key_in_index(BPlusTree *bPlusTree, int key);
+void delete_records_in_db(Storage *storage, vector<char *> record_addresses);
 
 int main()
 {
@@ -33,7 +36,7 @@ int main()
     int storage_size;
     Calculations cals;
     Storage *data;
-    BPlusTree *bPlusTree = &BPlusTree(); // initialize empty b+ tree
+    BPlusTree *bPlusTree;
 
     cout << "Please select block size. (Enter 1 or 2)\n";
     cout << "1. 200 B\n"
@@ -201,6 +204,7 @@ void RunExperiment1(Storage *data)
 
 void RunExperiment2(Storage *data, BPlusTree *bPlusTree)
 {
+    bPlusTree = BPlusTree().addr_of_object();
     build_BPlus_tree(data, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, data->get_blk_size(), true, true, true, false);
 }
