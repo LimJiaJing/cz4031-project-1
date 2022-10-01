@@ -102,11 +102,11 @@ int main(){
                 }
                 if (sel3 == '1')
                 {
-                    blockSize = 200;
+                    blockSize = BLOCK_SIZE_1;
                 }
                 else if (sel3 == '2')
                 {
-                    blockSize = 500;
+                    blockSize = BLOCK_SIZE_2;
                 }
                 else
                 {
@@ -210,8 +210,8 @@ void store_records(Storage data) {
     data.insert_item(&test, RECORD_SIZE);
     data.delete_item((char*) data.storage_ptr, RECORD_SIZE);
 
-    ifstream testfile("data.tsv");
-    string testline;
+    // ifstream testfile("data.tsv");
+    // string testline;
     // this commeneted out block is to find out number of records im working on a dynamic one but this one works fine like so it works but not best implementation
     // int numofrecords= -1;
     // while (getline(testfile, testline))
@@ -279,6 +279,5 @@ void store_records(Storage data) {
     cout << "Record size: " << RECORD_SIZE << " Btyes" <<endl;
     cout << "Allocated number of blocks: " << data.get_allocated_nof_blk() << endl;
     cout << "Allocated size: " << data.allocated_size<<endl;
-    return;
 }
 
