@@ -151,13 +151,16 @@ int main(){
                 cout << "Run experiment 3\n";
 
                 //Data block portion fo teh code
-                int block_count = 0;
-                int record_count = 0;
-                float average_rating = 0;
-                char* prev_block_address = 0;
-                //while list of record addresses is not empty
+                // int block_count = 0;
+                // int record_count = 0;
+                // float average_rating = 0;
+                // char* prev_block_address = 0;
+                // //need vector of addresses of the results of the search query
+                // vector<char*> search_results_adresses;
+                // int index = 0;
+                // while(index<search_results_addresses.size()) 
                 // {
-                //     char* current_block_address = data.record_addr_to_blk_addr(char* rarr)
+                //     char* current_block_address = data.record_addr_to_blk_addr(search_results_addresses[index])
                 //     if (current_block_address == prev_block_address)
                 //     {
                 //         //retrieve the avg rating of the individual record
@@ -180,9 +183,9 @@ int main(){
                 //     //change the prev to current for next loop
                 //     prev_block_address = current_block_address
                 // }
-                cout<< "Number of blocks accessed is " << block_count;
-                //the contents of first 5 printed out beforehand in the if portion
-                cout << "Average rating of all the recors accesed is " << average_rating/record_count;
+                // cout<< "Number of blocks accessed is " << block_count;
+                // //the contents of first 5 printed out beforehand in the if portion
+                // cout << "Average rating of all the recors accesed is " << average_rating/record_count;
 
                 break;
             }
