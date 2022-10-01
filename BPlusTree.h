@@ -144,7 +144,7 @@ public:
    short int maxnum;
 
    Parray(int blksize){
-   Record* Rpointer[blksize];
+   this->Rpointer = (Record**)malloc(blksize * sizeof(Record*));
    this->next = nullptr;
    this->num = 0;
    this->maxnum = blksize;
@@ -303,7 +303,7 @@ public:
     CLeafNode* m_pLeafTail;                   // 尾结点
     // 为插入而查找叶子结点
     CLeafNode *SearchLeafNode(KEY_TYPE data);
-    
+
     //插入键到中间结点
     bool InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pRightSon);
     // 在中间结点中删除键
