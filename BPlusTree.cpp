@@ -347,7 +347,7 @@ CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
     m_Type = NODE_TYPE_LEAF;
     m_Datas = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
     cout << "MAXNUMDATA" << MAX_KEYS << "\n";
-    Parray* m_Pointers[MAXNUM_POINTER-1];
+    m_Pointers = (Parray**)malloc((MAXNUM_POINTER-1) * sizeof(Parray*));
     maxnum = maxnum1;
     for (int i = 0; i < MAX_KEYS; i++)
     {
@@ -401,9 +401,10 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
    ;  //calculation funtion
     Parray* temp = new Parray(maxnum);
     temp->insertarray(rdata);
+    cout<<"success1";
     m_Pointers[i] = temp;
+    cout<<"success2";
     m_Count++;
-
     // 返回成功
     return true;
 }
@@ -1236,6 +1237,7 @@ bool Parray::insertarray(Record* Ppointer){
         return false;
         }
     int asize = this->maxnum;
+    cout<<"??????";
     if(num>=asize)
        {
         if((this->next) == nullptr)
@@ -1247,7 +1249,7 @@ bool Parray::insertarray(Record* Ppointer){
          this->next->insertarray(Ppointer);
        return true;
        }
-
+       cout<<"num"<<num<<endl;
    Rpointer[num] = Ppointer;
    num++;
    return true;
