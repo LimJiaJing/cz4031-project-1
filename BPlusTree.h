@@ -1,11 +1,7 @@
 #ifndef BPLUSTREE_H_INCLUDED
 #define BPLUSTREE_H_INCLUDED
 
-int ORDER_V  ;   /* 这里的v是内部节点中键的最小值 */
 
-int MAXNUM_KEY=(ORDER_V * 2)  ;  /* 内部结点中最多键个数，为2v */
-int MAXNUM_POINTER=(MAXNUM_KEY + 1)  ;  /* 内部结点中最多指向子树的指针个数，为2v */
-int MAXNUM_DATA=(ORDER_V * 2);    /* 叶子结点中最多数据个数，为2v */
 
 /* 键值的类型*/
 typedef int KEY_TYPE;    /* 为简单起见，定义为int类型，实际的B+树键值类型应该是可配的 */
@@ -29,7 +25,8 @@ NODE_TYPE_LEAF     = 3,    // 叶子结点
 class CNode
 {
 public:
-
+    int ORDER_V;
+    int maxnum ;
     CNode();
     virtual ~CNode();
 
@@ -80,7 +77,7 @@ public:
     // 获取和设置键值，对用户来说，数字从1开始，实际在结点中是从0开始的
     KEY_TYPE GetElement(int i)
     {
-        if ((i > 0 ) && (i <= MAXNUM_KEY))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             return m_Keys[i - 1];
         }
@@ -92,7 +89,7 @@ public:
 
     void SetElement(int i, KEY_TYPE key)
     {
-        if ((i > 0 ) && (i <= MAXNUM_KEY))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             m_Keys[i - 1] = key;
         }
@@ -101,7 +98,7 @@ public:
     // 获取和设置指针，对用户来说，数字从1开始
     CNode* GetPointer(int i)
     {
-        if ((i > 0 ) && (i <= MAXNUM_POINTER))
+        if ((i > 0 ) && (i <= (2*ORDER_V+1)))
         {
             return m_Pointers[i - 1];
         }
@@ -113,7 +110,7 @@ public:
 
     void SetPointer(int i, CNode* pointer)
     {
-        if ((i > 0 ) && (i <= MAXNUM_POINTER))
+        if ((i > 0 ) && (i <= (2*ORDER_V+1)))
         {
             m_Pointers[i - 1] = pointer;
         }
@@ -140,15 +137,16 @@ protected:
 
 class Parray{
 public:
-   int num;
+   short int num;
    int** Rpointer;
    Parray* next;
-
+   short int maxnum;
 
    Parray(int blksize){
    int* Rpointer[blksize]; //
    next = NULL;
    num = 0;
+   maxnum = blksize;
    }
    bool insertarray(int* pointer);
    int** getarray();
@@ -160,13 +158,13 @@ class CLeafNode : public CNode
 {
 public:
 
-    CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER);
+    CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER,short int maxnum);
     virtual ~CLeafNode();
 
     // 获取和设置数据
     KEY_TYPE GetElement(int i)
     {
-        if ((i > 0 ) && (i <= MAXNUM_DATA))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             return m_Datas[i - 1];
         }
@@ -178,7 +176,7 @@ public:
 
     void SetElement(int i, KEY_TYPE data)
     {
-        if ((i > 0 ) && (i <= MAXNUM_DATA))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             m_Datas[i - 1] = data;
         }
@@ -187,7 +185,7 @@ public:
 
       Parray* GetPointer1(int i)
     {
-        if ((i > 0 ) && (i <= MAXNUM_POINTER-1))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             return m_Pointers[i - 1];
         }
@@ -199,7 +197,7 @@ public:
 
     void SetPointer1(int i, Parray* pointer)
     {
-        if ((i > 0 ) && (i <= MAXNUM_POINTER))
+        if ((i > 0 ) && (i <= 2*ORDER_V))
         {
             m_Pointers[i - 1] = pointer;
         }
@@ -219,8 +217,7 @@ public:
 public:
     // 以下两个变量用于实现双向链表
     CLeafNode* m_pPrevNode;                 // 前一个结点
-    CLeafNode* m_pNextNode;                 // 后一个结点
-
+    CLeafNode* m_pNextNode;                 // 后一个结点;
 protected:
 
     KEY_TYPE* m_Datas;    // 数据数组
@@ -231,7 +228,8 @@ protected:
 class BPlusTree
 {
 public:
-
+    int ORDER_V;
+    short int maxnum;
     BPlusTree();
     virtual ~BPlusTree();
 
