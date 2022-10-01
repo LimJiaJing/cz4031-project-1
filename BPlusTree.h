@@ -1,11 +1,11 @@
 #ifndef BPLUSTREE_H_INCLUDED
 #define BPLUSTREE_H_INCLUDED
 
-#define ORDER_V 2    /* 为简单起见，把v固定为2，实际的B+树v值应该是可配的。这里的v是内部节点中键的最小值 */
+int ORDER_V  ;   /* 这里的v是内部节点中键的最小值 */
 
-#define MAXNUM_KEY (ORDER_V * 2)    /* 内部结点中最多键个数，为2v */
-#define MAXNUM_POINTER (MAXNUM_KEY + 1)    /* 内部结点中最多指向子树的指针个数，为2v */
-#define MAXNUM_DATA (ORDER_V * 2)    /* 叶子结点中最多数据个数，为2v */
+int MAXNUM_KEY=(ORDER_V * 2)  ;  /* 内部结点中最多键个数，为2v */
+int MAXNUM_POINTER=(MAXNUM_KEY + 1)  ;  /* 内部结点中最多指向子树的指针个数，为2v */
+int MAXNUM_DATA=(ORDER_V * 2);    /* 叶子结点中最多数据个数，为2v */
 
 /* 键值的类型*/
 typedef int KEY_TYPE;    /* 为简单起见，定义为int类型，实际的B+树键值类型应该是可配的 */
@@ -74,7 +74,7 @@ class CInternalNode : public CNode
 {
 public:
 
-    CInternalNode();
+    CInternalNode(int MAXNUM_KEY, int MAXNUM_POINTER);
     virtual ~CInternalNode();
 
     // 获取和设置键值，对用户来说，数字从1开始，实际在结点中是从0开始的
@@ -133,20 +133,26 @@ public:
 
 protected:
 
-    KEY_TYPE m_Keys[MAXNUM_KEY];           // 键数组
-    CNode* m_Pointers[MAXNUM_POINTER];     // 指针数组
+    KEY_TYPE* m_Keys;           // 键数组
+    CNode** m_Pointers;     // 指针数组
 
 };
 
-class ListNode{
+class Parray{
 public:
+   int num;
+   int** Rpointer;
+   Parray* next;
 
- //Record* Rpointer
-   int* Rpointer;
-   ListNode* next;
 
-   int* getLN(void);
-
+   Parray(int blksize){
+   int* Rpointer[blksize]; //
+   next = NULL;
+   num = 0;
+   }
+   bool insertarray(int* pointer);
+   int** getarray();
+   void cleararray();
 };
 
 /* 叶子结点数据结构 */
@@ -154,7 +160,7 @@ class CLeafNode : public CNode
 {
 public:
 
-    CLeafNode();
+    CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER);
     virtual ~CLeafNode();
 
     // 获取和设置数据
@@ -178,8 +184,8 @@ public:
         }
     }
 
-    // 获取和设置指针，对叶子结点无意义，只是实行父类的虚函数
-      ListNode* GetPointer1(int i)
+
+      Parray* GetPointer1(int i)
     {
         if ((i > 0 ) && (i <= MAXNUM_POINTER-1))
         {
@@ -191,22 +197,24 @@ public:
         }
     }
 
-    void SetPointer1(int i, ListNode* pointer)
+    void SetPointer1(int i, Parray* pointer)
     {
         if ((i > 0 ) && (i <= MAXNUM_POINTER))
         {
             m_Pointers[i - 1] = pointer;
         }
     }
-    // 插入数据
-    bool Insert(KEY_TYPE value);
+    // 插入key
+    bool Insert(KEY_TYPE value,Parray* Apointer);
     // 删除数据
     bool Delete(KEY_TYPE value);
+    // 插入数据
+    bool Insertdata(KEY_TYPE value, int* rdata);
 
     // 分裂结点
-    KEY_TYPE Split(CNode* pNode);
+    KEY_TYPE Split(CLeafNode* pNode);
     // 结合结点
-    bool Combine(CNode* pNode);
+    bool Combine(CLeafNode* pNode);
 
 public:
     // 以下两个变量用于实现双向链表
@@ -215,8 +223,8 @@ public:
 
 protected:
 
-    KEY_TYPE m_Datas[MAXNUM_DATA];    // 数据数组
-    ListNode* m_Pointers[MAXNUM_POINTER-1];
+    KEY_TYPE* m_Datas;    // 数据数组
+    Parray** m_Pointers;
 };
 
 /* B+树数据结构 */
@@ -230,7 +238,7 @@ public:
     // 查找指定的数据
     bool Search(KEY_TYPE data, char* sPath);
     // 插入指定的数据
-    bool Insert(KEY_TYPE data);
+    bool Insert(KEY_TYPE data, int* rdata);
     // 删除指定的数据
     bool Delete(KEY_TYPE data);
 
