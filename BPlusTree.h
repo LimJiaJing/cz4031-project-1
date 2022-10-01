@@ -26,7 +26,7 @@ class CNode
 {
 public:
     int ORDER_V;
-    int maxnum ;
+    short int maxnum ;
     CNode();
     virtual ~CNode();
 
@@ -230,9 +230,9 @@ class BPlusTree
 public:
     int ORDER_V;
     short int maxnum;
-    BPlusTree();
+    BPlusTree(int order, short int maxnum1);
     virtual ~BPlusTree();
-    BPlusTree *addr_of_object(void) { return this; }
+
     // 查找指定的数据
     bool Search(KEY_TYPE data, char* sPath);
     // 插入指定的数据
