@@ -406,7 +406,7 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     // 把数据存入当前位置
     m_Datas[i] = value;
    ;  //calculation funtion
-    Parray* temp = new Parray(maxnum);
+    Parray* temp = new Parray();
     // cout<< "function is : CLeafNode::Insertdata" <<endl;
     temp->insertarray(rdata);
     m_Pointers[i] = temp;
@@ -1296,13 +1296,13 @@ vector<CNode*> BPlusTree::AncestoryOfLeafNode(CLeafNode *node){
         }
         //cout << "type in ancestry " << curr_node->GetType() << "\n"; //uncomment this line to see the types of nodes before the function returns, but causes segmentation error before it does GetType() on nullptr
         if (curr_node == nullptr){
-            cout << "Unnatural Termination from AncestryOfLeafNode\n"; 
+            cout << "Unnatural Termination from AncestryOfLeafNode\n";
             return chain;
         }
         chain.push_back(curr_node);
 
     } while (curr_node->GetType() != NODE_TYPE_ROOT);
-   
+
     return chain;
 }
 
@@ -1311,38 +1311,23 @@ bool Parray::insertarray(Record* Ppointer){
     {
         return false;
         }
-    int asize = this->maxnum;
-    
+
     // if (Ppointer->getNumOfVotes() == 500)
     // {
     //     // cout<<"this is asize"<< asize<<endl;
     // cout << "this is num " << this->num <<endl;
     // }
-    if(this->num >= asize)
-       {
-        if((this->next) == nullptr)
-            {
-                Parray* newarray=new Parray(asize);
-                (this->next)=newarray;
-                // cout<< "function is : Parray::insertarray" <<endl;
-                // newarray->insertarray(Ppointer);
-                // return true;
-             }
-        //  cout<< "function is : Parray::insertarray" <<endl;
-         (this->next)->insertarray(Ppointer);
-       return true;
-       }
+    Rpointer.push_back(Ppointer);
     if(Ppointer->getNumOfVotes() ==500)
     {
         cout <<"This record got num votes "<< Ppointer->getNumOfVotes() << " this is num " << this->num <<endl;
     }
-   Rpointer[num] = Ppointer;
    num++;
    return true;
 
 }
 
-Record** Parray::getarray(){
+vector<Record*> Parray::getarray(){
   return Rpointer;
 }
 
