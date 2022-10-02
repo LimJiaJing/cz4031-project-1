@@ -425,18 +425,10 @@ vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
 
         Parray* curr_parray = parrays.at(i);
 
-        do{
-            int num_pointers = curr_parray->num;
-            cout << "Size of num_pointers" << num_pointers<<endl;
-            vector<Record*> curr_array = curr_parray->getarray();
-            for (int j = 0; j < num_pointers; j++){
-                Record dummy = storage->retrieve_record((char*)curr_array.at(j));
-                cout<< dummy.getTconst();
-                cout << dummy.getNumOfVotes();
-                record_addr.push_back((char*)curr_array.at(j));
-            }
-            curr_parray = curr_parray->next;
-        } while (curr_parray!=nullptr);
+        vector<Record *> array = curr_parray->getarray();
+        for (int j = 0; j < array.size(); j++){
+            record_addr.push_back((char*)array.at(j));
+        }
     }
     // cout << "number of record address:" << record_addr.size() << "\n";
     return record_addr;
