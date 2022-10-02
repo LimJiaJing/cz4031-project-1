@@ -46,7 +46,7 @@ int main()
 
     cout << "Please select block size. (Enter 1 or 2)\n";
     cout << "1. 200 B\n"
-         << "2. 500 B\n";
+         << "2. 500 B\n"<< endl;
 
     while (true){
         cout << "Selection: ";
@@ -80,7 +80,7 @@ int main()
     storage = Storage(storage_size + reservation, blockSize).addr_of_object();
     cout << "Initialization complete. Block size has been set to " << blockSize << "B.\n";
     cout << "Allocation complete. Disk storage of size " << ((storage_size + reservation) / (double)1000000) << "MB is now allocated.\n";
-    cout << "Allocated storage is now empty, please run experiment 1 to load data.\n";
+    cout << "Allocated storage is now empty, please run experiment 1 to load data.\n"<<endl;
     char sel2 = 'n';
     while (sel2 != '6')
     {
@@ -98,7 +98,7 @@ int main()
             validSelection = true;
             cout << "Selection: ";
             cin >> sel2;
-            cout << "You have selected option " << sel2 << ".\n";
+            cout << "You have selected option " << sel2 << ".\n"<<endl;
             switch (sel2)
             {
             case '0':
@@ -107,7 +107,7 @@ int main()
                 cout << "Change block size\n";
                 cout << "Please select block size to change to. (Enter 1 or 2)\n";
                 cout << "1. 200 B\n"
-                     << "2. 500 B\n";
+                     << "2. 500 B\n"<<endl;
 
                 while (true)
                 {
@@ -152,28 +152,28 @@ int main()
                 {
                     cout << "Running experiment 1...\n";
                     RunExperiment1(storage);
-                    cout << "Completed experiment 1...\n";
+                    cout << "Completed experiment 1...\n"<<endl;
                     break;
                 }
             case '2':
             {
                 cout << "Running experiment 2...\n";
                 bPlusTree = RunExperiment2(storage);
-                cout << "Completed experiment 2...\n";
+                cout << "Completed experiment 2...\n"<<endl;
                 break;
             }
             case '3':
             {
                 cout << "Running experiment 3...\n";
                 RunExperiment3(storage, bPlusTree);
-                cout << "Completed experiment 3...\n";
+                cout << "Completed experiment 3...\n"<<endl;
                 break;
             }
             case '4':
             {
                 cout << "Running experiment 4...\n";
                 RunExperiment4(storage, bPlusTree);
-                cout << "Completed experiment 4...\n";
+                cout << "Completed experiment 4...\n"<<endl;
                 break;
             }
             case '5':
@@ -181,20 +181,20 @@ int main()
                 cout << "Running experiment 5...\n";
                 // code to run experiment 5
                 RunExperiment5(storage, bPlusTree, 120);
-                cout << "Completed experiment 5...\n";
+                cout << "Completed experiment 5...\n"<<endl;
                 break;
              }
             case '6':
             {
                 cout << "Terminating program....\n";
                 // clean up code if any
-                cout << "Bye!";
+                cout << "Bye!"<<endl;
                 break;
             }
             default:
             {
                 validSelection = false;
-                cout << "Your selection is invalid, please select a valid option. (0, 1, 2, 3, 4, 5, or, 6)\n";
+                cout << "Your selection is invalid, please select a valid option. (0, 1, 2, 3, 4, 5, or, 6)\n"<<endl;
             }
             }
         } while (!validSelection);
@@ -242,7 +242,7 @@ void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key)
     delete_records(storage, bPlusTree, key);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), false, true, true, true);
     cout << "Number of times that a node is deleted = " << num_nodes_deleted << "\n"
-    << "Note: it does not include the number of Parrays deleted (level between leaf nodes and records)";
+    << "Note: it does not include the number of Parrays deleted (level between leaf nodes and records)"<<endl;
 }
 
 // experiment 1 helper code
