@@ -141,18 +141,16 @@ protected:
 class Parray{
 public:
    short int num;
-   Record** Rpointer;
+   vector<Record*> Rpointer;
    Parray* next;
-   short int maxnum;
 
-   Parray(int blksize){
-   this->Rpointer = (Record**)malloc(blksize * sizeof(Record*));
+   Parray(){
+   this->Rpointer = {};
    this->next = nullptr;
    this->num = 0;
-   this->maxnum = blksize;
    }
    bool insertarray(Record* pointer);
-   Record** getarray();
+   vector<Record*> getarray();
    void cleararray();
 };
 
