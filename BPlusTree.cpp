@@ -415,20 +415,20 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     return true;
 }
 
-bool CleafNode::insertsamekey(KEY_TYPE value, Record* rdata)
-{
-    int i,j;
-    // 找到要插入数据的位置
-    for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
-    cout << "size: " << m_Datas[0] << "\n";
-    cout<< "value" << value;
-     if(value == m_Datas[i]){
-        cout<<"test";
-        (*m_Pointers[i]).insertarray(rdata);
-          return true;
-     }
-
-}
+//bool CLeafNode::insertsamekey(KEY_TYPE value, Record* rdata)
+//{
+//    int i,j;
+//    // 找到要插入数据的位置
+//    for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
+//    cout << "size: " << m_Datas[0] << "\n";
+//    cout<< "value" << value;
+//     if(value == m_Datas[i]){
+//        cout<<"test";
+//        (*m_Pointers[i]).insertarray(rdata);
+//          return true;
+//     }
+//
+//}
 //在叶子结点中插入一个key
 bool CLeafNode::Insert(KEY_TYPE value, Parray* Apointer) //
 {
@@ -674,7 +674,7 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
     }
     if(found)
     {
-        pOldNode->insertsamekey(data, rdata);
+        pOldNode->Insertdata(data, rdata);
         return true;
     }
     // 叶子结点未满，对应情况1，直接插入

@@ -214,7 +214,7 @@ public:
     KEY_TYPE Split(CLeafNode* pNode);
     // 结合结点
     bool Combine(CLeafNode* pNode);
-    bool insertsamekey(KEY_TYPE value, Record* rdata)；
+    bool insertsamekey(KEY_TYPE value, Record* rdata);
 
 public:
     // 以下两个变量用于实现双向链表
@@ -243,7 +243,7 @@ public:
     bool Insert(KEY_TYPE data, Record* rdata);
     // 删除指定的数据
     bool Delete(KEY_TYPE data);
-    
+
     // 清除树
     void ClearTree();
 
