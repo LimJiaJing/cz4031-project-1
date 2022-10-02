@@ -460,7 +460,9 @@ void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_
             if(block_count<5)
             {
                 cout << "This is block number " << block_count <<" and the block ID is " <<  storage->get_blk_id(current_block_address) <<endl;
+                cout << endl;
                 cout <<"Number of votes in the block are"<<endl;
+                cout <<endl;
                 vector<Record> contents_of_block = storage->retrieve_blk(current_block_address);
                 for (int i = 0; i< contents_of_block.size() ; i++)
                  {
