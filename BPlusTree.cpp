@@ -516,7 +516,7 @@ bool CLeafNode::Combine(CLeafNode* pNode)
 }
 BPlusTree::BPlusTree(int Order, short int maxnum1 )
 {
-
+    heightOfTree = 0; //reset height to zero everytime tree is created
     m_Depth = 0;
     m_Root = nullptr;
     m_pLeafHead = nullptr;
@@ -721,6 +721,7 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
 */
 bool BPlusTree::Delete(KEY_TYPE data)
 {
+    num_nodes_deleted = 0; // reset to 0 everytime delete tree runs
     // 查找理想的叶子结点
     CLeafNode* pOldNode = SearchLeafNode(data);
     // 如果没有找到，返回失败
@@ -1250,7 +1251,8 @@ int BPlusTree::NumofNode(CNode *root)
     return numofchildnode;
 }
 
-vector<CNode*> CLeafNode::AncestoryOfLeadNode(CLeafNode *node){
+vector<CNode*> BPlusTree::AncestoryOfLeafNode(CLeafNode *node){
+// only works if leaf node is not the root node
 
     vector<CNode *> chain = {};
     if (node == nullptr)
@@ -1259,9 +1261,21 @@ vector<CNode*> CLeafNode::AncestoryOfLeadNode(CLeafNode *node){
     }
     chain.push_back(node);
     CNode* curr_node = node;
+    cout << "type = " << curr_node->GetType() << "\n";
     do {
+
+        cout<< "in do while loop\n";
         curr_node = curr_node->GetFather();
+        if (curr_node == nullptr){
+            cout << "it became null before reaching root node";
+        }
+        //cout << "type in ancestry " << curr_node->GetType() << "\n"; //uncomment this line to see the types of nodes before the function returns, but causes segmentation error before it does GetType() on nullptr
+        if (curr_node == nullptr){
+            cout << "Unnatural Termination from AncestryOfLeafNode\n"; 
+            return chain;
+        }
         chain.push_back(curr_node);
+
     } while (curr_node->GetType() != NODE_TYPE_ROOT);
    
     return chain;

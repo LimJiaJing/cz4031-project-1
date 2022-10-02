@@ -21,6 +21,8 @@ NODE_TYPE_LEAF     = 3,    // 叶子结点
 #define FLAG_LEFT 1
 #define FLAG_RIGHT 2
 
+int heightOfTree = 0;
+
 /* 结点数据结构，为内部结点和叶子结点的父类 */
 class CNode
 {
@@ -215,7 +217,6 @@ public:
     // 结合结点
     bool Combine(CLeafNode* pNode);
 
-    vector<CNode *> AncestoryOfLeadNode(CLeafNode *node);
 
 public:
     // 以下两个变量用于实现双向链表
@@ -270,7 +271,11 @@ public:
 
     void SetRoot(CNode* root)
     {
+        heightOfTree++;
         m_Root = root;
+        if (root == nullptr){
+            heightOfTree = 0; //reset height to zero if root is nullptr
+        }
     }
 
     // 获取和设置深度
@@ -299,6 +304,7 @@ public:
         }
     }
     int NumofNode(CNode *root);
+    vector<CNode *> AncestoryOfLeafNode(CLeafNode *node);
 
 public:
     // 以下两个变量用于实现双向链表

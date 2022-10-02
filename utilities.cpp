@@ -20,16 +20,18 @@ using std::cout;
 void store_records(Storage* storage);
 void RunExperiment1(Storage *storage);
 BPlusTree* RunExperiment2(Storage *storage);
-void RunExperiment3(Storage* storage);
-void RunExperiment4(Storage* storage);
+void RunExperiment3(Storage* storage, BPlusTree *bPlusTree);
+void RunExperiment4(Storage* storage, BPlusTree *bPlusTree);
 void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key);
 void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree);
 void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool parameter_n, bool num_nodes, bool height, bool content);
 void delete_records(Storage *storage, BPlusTree *bPlusTree, int key);
 void delete_key_in_index(BPlusTree *bPlusTree, int key);
 void delete_records_in_db(Storage *storage, vector<char *> record_addresses);
-vector<char *> get_all_record_addr(BPlusTree *bPlusTree, int start, int end = 0);
-void retrieve_search_statistics(Storage *storage, vector<char *> search_results_addresses);
+vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end = 0);
+void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_results_addresses);
+void retrieve_search_statistics_index(BPlusTree *bPlusTree, CLeafNode *start_node, int start, int end = 0);
+vector<CLeafNode *> get_nodes_accessed_at_leaf_level(CLeafNode *start_node, int start, int end); 
 
 // global variables
 Calculations cals;
@@ -163,14 +165,14 @@ int main()
             case '3':
             {
                 cout << "Running experiment 3...\n";
-                RunExperiment3(storage);
+                RunExperiment3(storage, bPlusTree);
                 cout << "Completed experiment 3...\n";
                 break;
             }
             case '4':
             {
                 cout << "Running experiment 4...\n";
-                RunExperiment4(storage);
+                RunExperiment4(storage, bPlusTree);
                 cout << "Completed experiment 4...\n";
                 break;
             }
@@ -210,28 +212,37 @@ BPlusTree* RunExperiment2(Storage *storage)
 {
     BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize), cals.GetMaxNumOfPointersInLinkedListBlock(blockSize));
     build_BPlus_tree(storage, bPlusTree);
-    report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, false);
+    report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, true);
     return bPlusTree;
 }
 
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
-void RunExperiment3(Storage* storage)
+void RunExperiment3(Storage* storage, BPlusTree *bPlusTree)
 {
-  vector<char*> record_addresses = get_all_record_addr(bPlusTree, 120);
-  retrieve_search_statistics(storage, record_addresses);
+    int key_to_find = 120;
+    CLeafNode *start_node = bPlusTree->SearchLeafNode(key_to_find);
+    vector<char *> record_addresses = get_all_record_addr(start_node, key_to_find);
+    retrieve_search_statistics_storage(storage, record_addresses);
+    retrieve_search_statistics_index(bPlusTree, start_node, key_to_find);
 }
 
-void RunExperiment4(Storage* storage)
+void RunExperiment4(Storage* storage, BPlusTree* bPlusTree)
 {
-    vector<char*> record_addresses = get_all_record_addr(bPlusTree, 0, 500);
-    retrieve_search_statistics(storage, record_addresses);
+    int start_of_range = 30000;
+    int end_of_range = 40000;
+    CLeafNode *start_node = bPlusTree->SearchLeafNode(start_of_range);
+    vector<char *> record_addresses = get_all_record_addr(start_node, start_of_range, end_of_range);
+    retrieve_search_statistics_storage(storage, record_addresses);
     // code for number and content of index nodes the process accesses
+    retrieve_search_statistics_index(bPlusTree, start_node, start_of_range, end_of_range);
 }
 
 void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key)
 {
     delete_records(storage, bPlusTree, key);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), false, true, true, true);
+    cout << "Number of times that a node is deleted = " << num_nodes_deleted << "\n"
+    << "Note: it does not include the number of Parrays deleted (level between leaf nodes and records)";
 }
 
 // experiment 1 helper code
@@ -331,23 +342,47 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
     }
     if (num_nodes)
     {
-        cout << "Number of nodes of the B+ tree:";
+        CNode* rootnode = bPlusTree->GetRoot();
+        cout << "Number of nodes of the B+ tree: " << bPlusTree->NumofNode(rootnode) << "\n";
     }
     if (height)
     {
-        cout << "Height of B+ tree";
+        cout << "Height of B+ tree = " << heightOfTree << "\n";
+        cout << "Note: We consider root node height to be 1, and our height includes the level of the pointer arrays\n"
+             << "pointer arrays are between the leaf nodes and the records" 
+             << "(please refer to report for more information)\n";
     }
     if (content)
     {
         // code to print content of root node and its first child node
+        CNode *root = bPlusTree->GetRoot();
+        CNode *child = nullptr;
+        if (root->GetType()!=NODE_TYPE_LEAF){
+            child = root->GetPointer(1);
+        }
+        cout << "Root node keys: ";
+        for (int i = 1; i <= root->GetCount();i++){
+            cout << root->GetElement(i) << " | ";
+        }
+        cout << "\n";
+        if (child == nullptr){
+            cout << "Root node is a leaf node and therefore has no child;\n";
+        }
+        else{
+            cout << "First child node keys: ";
+            for (int i = 1; i <= child->GetCount(); i++){
+                cout << root->GetElement(i) << " | ";
+            }
+            cout << "\n";
+        }
     }
 }
 
 // experiment 3 and 4 helper code
-vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
+vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
 {
     cout << "end = " << end << "(should be 0 for experiment 3 and 40000 for experiment 4)\n";
-    CLeafNode *start_node = bPlusTree->SearchLeafNode(start);
+   
     if (start_node == nullptr){
         cout << "This shouldnt happen";
     }
@@ -404,7 +439,7 @@ vector<char *> get_all_record_addr(BPlusTree* bPlusTree, int start, int end)
     // cout << "number of record address:" << record_addr.size() << "\n";
     return record_addr;
 }
-void retrieve_search_statistics(Storage *storage, vector<char*> search_results_addresses)
+void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_results_addresses)
 {
     int block_count = 0;
     int record_count = 0;
@@ -448,6 +483,88 @@ void retrieve_search_statistics(Storage *storage, vector<char*> search_results_a
 
     return;
 }
+void retrieve_search_statistics_index(BPlusTree* bPlusTree, CLeafNode* start_node, int start, int end){
+    if (end == 0)
+    {
+        end = start;
+    }
+    vector<CNode *> nodes_accessed_to_find_start = bPlusTree->AncestoryOfLeafNode(start_node);
+    vector<CLeafNode*> leaf_nodes_accessed_after_finding_start = get_nodes_accessed_at_leaf_level(start_node, start, end);
+    int total_index_blocks_accessed = nodes_accessed_to_find_start.size() + leaf_nodes_accessed_after_finding_start.size();
+    cout << "total_index_blocks_accessed = " << total_index_blocks_accessed << "\n";
+    int printcount = 0;
+    int max_printcount = 5;
+    CNode *curr_node = nullptr;
+    for (int j = 0; j < nodes_accessed_to_find_start.size();j++){
+        curr_node = nodes_accessed_to_find_start.at(j);
+        if (curr_node == nullptr){
+            cout<<"SOMETHING IS WRONG\n";
+            return;
+        }
+        cout << "Keys index block " << printcount+1 << " accessed: ";
+        for (int i = 1; i <= curr_node->GetCount();i++){
+            cout << curr_node->GetElement(i)<<" | ";
+        }
+        cout << "\n";
+        printcount++;
+        if (max_printcount==5){
+            break;
+        }
+    }
+    for (int j = 0; j < leaf_nodes_accessed_after_finding_start.size(); j++)
+    {
+        if (printcount == 5){
+            break;
+        }
+        curr_node = leaf_nodes_accessed_after_finding_start.at(j);
+        if (curr_node == nullptr)
+        {
+            cout << "SOMETHING IS WRONG\n";
+            return;
+        }
+        cout << "Keys index block " << printcount + 1 << " accessed: ";
+        for (int i = 1; i <= curr_node->GetCount(); i++)
+        {
+            cout << curr_node->GetElement(i) << " | ";
+        }
+        cout << "\n";
+        printcount++;
+    }
+}
+vector<CLeafNode*> get_nodes_accessed_at_leaf_level(CLeafNode* start_node, int start, int end){
+    vector<CLeafNode *> nodes_accessed = {}; // excepted start_node
+    int curr_key = start;
+    CLeafNode *curr_node = start_node;
+    bool flag_for_while = true;
+    do
+    {
+        int i = 1;
+        for (i = 1; (i <= curr_node->GetCount()); i++)
+        {
+            // cout << "element " << i << " = " << curr_node->GetElement(i) << "\n";
+            // cout << "current key = " << curr_key << "\n";
+            int curr_key_in_node = curr_node->GetElement(i);
+            if (curr_key_in_node >= start && curr_key_in_node <= end)
+            {
+                // parrays.push_back(curr_node->GetPointer1(i));
+            }
+            if (curr_key_in_node > end)
+            {
+                flag_for_while = false;
+                break;
+            }
+        }
+        // cout << "size of parrays " << parrays.size() << "\n";
+        curr_node = curr_node->m_pNextNode;
+        if (curr_node == nullptr)
+        {
+            break;
+        }
+        nodes_accessed.push_back(curr_node);
+
+    } while (flag_for_while);
+    return nodes_accessed;
+}
 // helper code for experiment 5
 void delete_records_in_db(Storage *storage, vector<char *> record_addresses)
 {
@@ -473,7 +590,9 @@ void delete_key_in_index(BPlusTree *bPlusTree, int key)
 
 void delete_records(Storage *storage, BPlusTree *bPlusTree, int key)
 {
-    vector<char *> record_addresses = get_all_record_addr(bPlusTree, key);
+    int key_to_delete = 1000;
+    CLeafNode *start_node = bPlusTree->SearchLeafNode(key_to_delete);
+    vector<char *> record_addresses = get_all_record_addr(start_node, key);
     cout << "Found all records with numVotes = " << key << "\n";
     delete_records_in_db(storage, record_addresses); // this one can return a tuple detailing the number of times a node is deleted
     cout << "Deleted all records with numVotes = " << key << "\n";
