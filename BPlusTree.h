@@ -123,7 +123,7 @@ public:
     bool Delete(KEY_TYPE value);
 
     // 分裂结点
-    KEY_TYPE Split(CInternalNode* pNode, KEY_TYPE key);
+    KEY_TYPE Split(CInternalNode* pNode, KEY_TYPE key, int* flag);
     // 结合结点(合并结点)
     bool Combine(CNode* pNode);
     // 从另一结点移一个元素到本结点
