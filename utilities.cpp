@@ -31,7 +31,7 @@ void delete_records_in_db(Storage *storage, vector<char *> record_addresses);
 vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end = 0);
 void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_results_addresses);
 void retrieve_search_statistics_index(BPlusTree *bPlusTree, CLeafNode *start_node, int start, int end = 0);
-vector<CLeafNode *> get_nodes_accessed_at_leaf_level(CLeafNode *start_node, int start, int end); 
+vector<CLeafNode *> get_nodes_accessed_at_leaf_level(CLeafNode *start_node, int start, int end);
 
 // global variables
 Calculations cals;
@@ -350,7 +350,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
     {
         cout << "Height of B+ tree = " << heightOfTree << "\n";
         cout << "Note: We consider root node height to be 1, and our height includes the level of the pointer arrays\n"
-             << "pointer arrays are between the leaf nodes and the records" 
+             << "pointer arrays are between the leaf nodes and the records"
              << "(please refer to report for more information)\n";
     }
     if (content)
@@ -383,7 +383,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
 vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
 {
     cout << "end = " << end << "(should be 0 for experiment 3 and 40000 for experiment 4)\n";
-   
+
     if (start_node == nullptr){
         cout << "This shouldnt happen";
     }
@@ -427,13 +427,13 @@ vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
 
         do{
             int num_pointers = curr_parray->num;
-            cout << "Size of num_pointers" << num_pointers<<endl; 
-            Record** curr_array = curr_parray->getarray();
+            cout << "Size of num_pointers" << num_pointers<<endl;
+            vector<Record*> curr_array = curr_parray->getarray();
             for (int j = 0; j < num_pointers; j++){
-                Record dummy = storage->retrieve_record((char*)curr_array[j]);
+                Record dummy = storage->retrieve_record((char*)curr_array.at(j));
                 cout<< dummy.getTconst();
                 cout << dummy.getNumOfVotes();
-                record_addr.push_back((char*)(curr_array[j]));
+                record_addr.push_back((char*)curr_array.at(j));
             }
             curr_parray = curr_parray->next;
         } while (curr_parray!=nullptr);
