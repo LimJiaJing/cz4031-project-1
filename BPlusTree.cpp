@@ -173,7 +173,7 @@ bool CInternalNode::Delete(KEY_TYPE key)
 (3)如果key介于第V和V+1个键之间，则把key作为 要提出的键，原来的键各分一半到两个结点中
 提出来的RetKey作用是便于后续插入到祖先结点
 */
-KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新插入的值，pNode是分裂结点
+KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //key是新插入的值，pNode是分裂结点
 {
     int i = 0, j = 0;
 
@@ -181,7 +181,7 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新�
     if ((key > this->GetElement(ORDER_V)) && (key < this->GetElement(ORDER_V + 1)))
     {
         // 把第V+1 -- 2V个键移到指定的结点中
-
+        *flag = 0;
         for (i = ORDER_V + 1; i <= MAX_KEYS; i++)
         {
             j++;
@@ -214,10 +214,12 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新�
     if (key < this->GetElement(ORDER_V))
     {
         position = ORDER_V;
+        *flag = 1 ;
     }
     else
     {
         position = ORDER_V + 1;
+        *flag = 2;
     }
 
     // 把第position个键提出来，作为新的键值返回
@@ -1116,13 +1118,14 @@ bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pR
     CInternalNode* pBrother = new CInternalNode(MAX_KEYS, MAX_KEYS+1);  //C++中new 类名表示分配一个类需要的内存空间，并返回其首地址；
     KEY_TYPE NewKey = INVALID;
     // 分裂本结点
-    NewKey = pNode->Split(pBrother, key);
+    int flag = -1;
+    NewKey = pNode->Split(pBrother, key, &flag);
 
-    if (pNode->GetCount() < pBrother->GetCount())
+    if (flag == 1 )
     {
         pNode->Insert(key, pRightSon);
     }
-    else if (pNode->GetCount() > pBrother->GetCount())
+    else if (flag == 2)
     {
          pBrother->Insert(key, pRightSon);
     }
@@ -1334,4 +1337,3 @@ void Parray::cleararray(){
   {return;}
   return ;
 }
-
