@@ -982,31 +982,31 @@ int BPlusTree::NumofNode(CNode *root)
 vector<CNode*> BPlusTree::AncestoryOfLeafNode(CLeafNode *node){
 // only works if leaf node is not the root node
 
-    vector<CNode *> chain = {};
-    if (node == nullptr)
+   vector<CNode *> chain = {};
+    int i = 0;
+
+    CNode * pNode = GetRoot();
+    
+    while (nullptr != pNode)
     {
-        return chain;
+     
+        if (NODE_TYPE_LEAF == pNode->GetType())
+        {
+            break;
+        }
+
+        for (i = 1; i <= pNode->GetCount(); i++)
+        {
+            if (data < pNode->GetElement(i))
+            {
+                break;
+            }
+        }
+        chain.push_back(pNode);
+        pNode = pNode->GetPointer(i);
     }
-    chain.push_back(node);
-    CNode* curr_node = node;
-    cout << "type = " << curr_node->GetType() << "\n";
-    do {
-
-        cout<< "in do while loop\n";
-        curr_node = curr_node->GetFather();
-        if (curr_node == nullptr){
-            cout << "it became null before reaching root node";
-        }
-        //cout << "type in ancestry " << curr_node->GetType() << "\n"; //uncomment this line to see the types of nodes before the function returns, but causes segmentation error before it does GetType() on nullptr
-        if (curr_node == nullptr){
-            cout << "Unnatural Termination from AncestryOfLeafNode\n";
-            return chain;
-        }
-        chain.push_back(curr_node);
-
-    } while (curr_node->GetType() != NODE_TYPE_ROOT);
-
-    return chain;
+    chain.push_back(pNode);
+    return chain
 }
 
 bool Parray::insertarray(Record* Ppointer){
