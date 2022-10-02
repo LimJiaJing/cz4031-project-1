@@ -89,8 +89,6 @@ char* Storage::insert_item(void* item_addr, int item_size) {
         blks[blk_id].store(item_size);
         allocated_size += item_size;
 
-//        cout << "Successfully insert the item at block " << blk_id << endl;
-//        cout << "Block "<< blk_id << " now has " << blks[blk_id].get_space_used() << " bytes used."<<endl;
     } else {
         cout << "The storage is full. No more space for new items." << endl;
     }
