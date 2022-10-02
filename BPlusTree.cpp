@@ -190,7 +190,7 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新�
         }
 
         // 把第V+2 -- 2V+1个指针移到指定的结点中
-        j = 0;
+        j = 1;
         for (i = ORDER_V + 2; i <= (MAX_KEYS+1); i++)
         {
             j++;
