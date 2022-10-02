@@ -3,8 +3,6 @@
 #include <vector>
 #include "BlockInfo.h"
 
-using std::cout;
-
 BlockInfo::BlockInfo(unsigned int blk_size) {
     this->blk_size = blk_size;
     this->space_used = 0;
