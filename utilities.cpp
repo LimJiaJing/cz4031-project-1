@@ -211,7 +211,7 @@ void RunExperiment1(Storage *storage)
 
 BPlusTree* RunExperiment2(Storage *storage)
 {
-    BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize));
+    BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(storage->get_blk_size()));
     build_BPlus_tree(storage, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, true);
     number_of_keys(bPlusTree);
@@ -629,6 +629,7 @@ void number_of_keys(BPlusTree *bPlusTree){
                 print_count++;
             }
             if (prev_key>curr_key){
+                cout << "pre key: " << prev_key <<" cur key: " << curr_key<<endl;
                 cout << "there is a sequence issue in leaf level"<<endl;
             }
             if (prev_key == curr_key){

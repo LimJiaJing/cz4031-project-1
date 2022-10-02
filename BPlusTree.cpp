@@ -20,10 +20,9 @@ CNode::~CNode()
     DeleteChildren();
 }
 
-// 获取一个最近的兄弟结点
 CNode* CNode::GetBrother(int& flag)
 {
-    CNode* pFather = GetFather();   //获取其父结点指针
+    CNode* pFather = GetFather();
     if (nullptr == pFather)
     {
         return nullptr;
@@ -31,19 +30,18 @@ CNode* CNode::GetBrother(int& flag)
 
     CNode* pBrother = nullptr;
 
-    for (int i = 1; i <= pFather->GetCount() + 1; i++)   //GetCount()表示获取数据或关键字数，要比指针数小1。
+    for (int i = 1; i <= pFather->GetCount() + 1; i++)
     {
-        // 找到本结点的位置
         if (pFather->GetPointer(i) == this)
         {
-            if (i == (pFather->GetCount() + 1))   //表示其为父结点的最右边孩子。
+            if (i == (pFather->GetCount() + 1))
             {
-                pBrother = pFather->GetPointer(i - 1);    // 本身是最后一个指针，只能找前一个指针
+                pBrother = pFather->GetPointer(i - 1);
                 flag = FLAG_LEFT;
             }
             else
             {
-                pBrother = pFather->GetPointer(i + 1);    // 优先找后一个指针
+                pBrother = pFather->GetPointer(i + 1);
                 flag = FLAG_RIGHT;
             }
         }
@@ -52,10 +50,9 @@ CNode* CNode::GetBrother(int& flag)
     return pBrother;
 }
 
-// 递归删除子结点
-void CNode::DeleteChildren()   //
+void CNode::DeleteChildren()
 {
-    for (int i = 1; i <= GetCount(); i++)   //GetCount()为返回结点中关键字即数据的个数
+    for (int i = 1; i <= GetCount(); i++)
     {
         if(this->m_Type==NODE_TYPE_LEAF)
         {
@@ -70,7 +67,6 @@ void CNode::DeleteChildren()   //
     }
 }
 
-//将内部节点的关键字和指针分别初始化为0和空
 CInternalNode::CInternalNode(int MAXNUM_KEY, int MAXNUM_POINTER)
 {
     MAX_KEYS = MAXNUM_KEY;
@@ -103,7 +99,6 @@ CInternalNode::~CInternalNode()
 bool CInternalNode::Insert(KEY_TYPE value, CNode* pNode)
 {
     int i;
-    // 如果中间结点已满，直接返回失败
     if (GetCount() >= MAX_KEYS)
     {
         return false;
@@ -111,27 +106,23 @@ bool CInternalNode::Insert(KEY_TYPE value, CNode* pNode)
 
     int j = 0;
 
-    // 找到要插入键的位置
     for (i = 0; (value > m_Keys[i]) && ( i < m_Count); i++)
     {
     }
 
-    // 当前位置及其后面的键依次后移，空出当前位置
     for (j = m_Count; j > i; j--)
     {
         m_Keys[j] = m_Keys[j - 1];
     }
 
-    // 当前位置及其后面的指针依次后移
     for (j = m_Count + 1; j > i + 1; j--)
     {
         m_Pointers[j] = m_Pointers[j - 1];
     }
 
-    // 把键和指针存入当前位置
     m_Keys[i] = value;
-    m_Pointers[i + 1] = pNode;    // 注意是第i+1个指针而不是第i个指针
-    pNode->SetFather(this);      // 非常重要  该函数的意思是插入关键字value及其所指向子树
+    m_Pointers[i + 1] = pNode;
+    pNode->SetFather(this);
 
     m_Count++;
 
@@ -139,7 +130,7 @@ bool CInternalNode::Insert(KEY_TYPE value, CNode* pNode)
     return true;
 }
 
-// 在中间结点中删除键，以及该键后的指针
+
 bool CInternalNode::Delete(KEY_TYPE key)
 {
     int i,j,k;
@@ -164,23 +155,12 @@ bool CInternalNode::Delete(KEY_TYPE key)
     return true;
 }
 
-/* 分裂中间结点
-分裂中间结点和分裂叶子结点完全不同，因为中间结点不仅有2V键，还有2V+1指针，如果单纯地一分为2，指针将无法分 配。
-因此根据http://www.seanster.com/BplusTree/BplusTree.html ，分裂中 间结点的算法是：
-根据要插入的键key判断：
-(1)如果key小于第V个键，则把第V个键提出来,其左右的键分别分到两个结点中
-(2) 如果key大于第V+1个键，则把第V+1个键提出来,其左右的键分别分到两个结点中
-(3)如果key介于第V和V+1个键之间，则把key作为 要提出的键，原来的键各分一半到两个结点中
-提出来的RetKey作用是便于后续插入到祖先结点
-*/
-KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //key是新插入的值，pNode是分裂结点
+KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)
 {
     int i = 0, j = 0;
 
-    // 如果要插入的键值在第V和V+1个键值中间，需要翻转一下，因此先处理此情况
     if ((key > this->GetElement(ORDER_V)) && (key < this->GetElement(ORDER_V + 1)))
     {
-        // 把第V+1 -- 2V个键移到指定的结点中
         *flag = 0;
         for (i = ORDER_V + 1; i <= MAX_KEYS; i++)
         {
@@ -189,27 +169,21 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //
             this->SetElement(i, INVALID);
         }
 
-        // 把第V+2 -- 2V+1个指针移到指定的结点中
         j = 1;
         for (i = ORDER_V + 2; i <= (MAX_KEYS+1); i++)
         {
             j++;
-            this->GetPointer(i)->SetFather(pNode);    // 重新设置子结点的父亲
+            this->GetPointer(i)->SetFather(pNode);
             pNode->SetPointer(j, this->GetPointer(i));
             this->SetPointer(i, nullptr);
         }
 
-        // 设置好Count个数
         this->SetCount(ORDER_V);
         pNode->SetCount(ORDER_V);
 
-        // 把原键值返回
         return key;
     }
 
-    // 以下处理key小于第V个键值或key大于第V+1个键值的情况
-
-    // 判断是提取第V还是V+1个键
     int position = 0;
     if (key < this->GetElement(ORDER_V))
     {
@@ -222,10 +196,8 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //
         *flag = 2;
     }
 
-    // 把第position个键提出来，作为新的键值返回
     KEY_TYPE RetKey = this->GetElement(position);
 
-    // 把第position+1 -- 2V个键移到指定的结点中
     j = 0;
     for (i = position + 1; i <= MAX_KEYS; i++)
     {
@@ -234,20 +206,17 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //
         this->SetElement(i, INVALID);
     }
 
-    // 把第position+1 -- 2V+1个指针移到指定的结点中(注意指针比键多一个)
     j = 0;
     for (i = position + 1; i <= (MAX_KEYS+1); i++)
     {
         j++;
-        this->GetPointer(i)->SetFather(pNode);    // 重新设置子结点的父亲
+        this->GetPointer(i)->SetFather(pNode);
         pNode->SetPointer(j, this->GetPointer(i));
         this->SetPointer(i, nullptr);
     }
 
-    // 清除提取出的位置
     this->SetElement(position, INVALID);
 
-    // 设置好Count个数
     this->SetCount(position - 1);
     pNode->SetCount(MAX_KEYS - position);
 
@@ -255,21 +224,18 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key, int* flag)  //
     return RetKey;
 }
 
-//结合结点，把指定中间结点的数据全部剪切到本中间结点
 bool CInternalNode::Combine(CNode* pNode)
 {
-    // 参数检查
-    if (this->GetCount() + pNode->GetCount() + 1> MAX_KEYS)    // 预留一个新键的位置
+    if (this->GetCount() + pNode->GetCount() + 1> MAX_KEYS)
     {
         return false;
     }
 
-    // 取待合并结点的第一个孩子的第一个元素作为新键值
-    KEY_TYPE NewKey = pNode->GetPointer(1)->GetElement(1);  //疑问：感觉应该改为KEY_TYPE NewKey = pNode->GetElement(1);GetPointer(1)->
+    KEY_TYPE NewKey = pNode->GetPointer(1)->GetElement(1);
 
     m_Keys[m_Count] = NewKey;
     m_Count++;
-    m_Pointers[m_Count] = pNode->GetPointer(1);   //疑问：感觉应该为m_Pointers[m_Count+1] = pNode->GetPointer(1);
+    m_Pointers[m_Count] = pNode->GetPointer(1);
 
     for (int i = 1; i <= pNode->GetCount(); i++)
     {
@@ -281,10 +247,8 @@ bool CInternalNode::Combine(CNode* pNode)
     return true;
 }
 
-// 从另一结点移一个元素到本结点
 bool CInternalNode::MoveOneElement(CNode* pNode)
 {
-    // 参数检查
     if (this->GetCount() >= MAX_KEYS)
     {
         return false;
@@ -292,11 +256,8 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
 
     int i,j;
 
-
-    // 兄弟结点在本结点左边
     if (pNode->GetElement(1) < this->GetElement(1))
     {
-        // 先腾出位置
         for (i = m_Count; i > 0; i--)
         {
             m_Keys[i] = m_Keys[i -1];
@@ -306,25 +267,17 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
             m_Pointers[j] = m_Pointers[j -1];
         }
 
-        // 赋值
-        // 第一个键值不是兄弟结点的最后一个键值，而是本结点第一个子结点的第一个元素的值
         m_Keys[0] = GetPointer(1)->GetElement(1);
-        // 第一个子结点为兄弟结点的最后一个子结点
         m_Pointers[0] = pNode->GetPointer(pNode->GetCount() + 1);
 
-        // 修改兄弟结点
         pNode->SetElement(pNode->GetCount(), INVALID);
         pNode->SetPointer(pNode->GetCount() + 1, nullptr);
     }
-    else    // 兄弟结点在本结点右边
+    else
     {
-        // 赋值
-        // 最后一个键值不是兄弟结点的第一个键值，而是兄弟结点第一个子结点的第一个元素的值
         m_Keys[m_Count] = pNode->GetPointer(1)->GetElement(1);
-        // 最后一个子结点为兄弟结点的第一个子结点
         m_Pointers[m_Count + 1] = pNode->GetPointer(1);
 
-        // 修改兄弟结点
         for (i = 1; i < pNode->GetCount() - 1; i++)
         {
             pNode->SetElement(i, pNode->GetElement(i + 1));
@@ -335,21 +288,18 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
         }
     }
 
-    // 设置数目
     this->SetCount(this->GetCount() + 1);
     pNode->SetCount(pNode->GetCount() - 1);
 
     return true;
 }
 
-// 清除叶子结点中的数据
 CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER)
 {
     MAX_KEYS = MAXNUM_DATA;
     ORDER_V = MAX_KEYS / 2;
     m_Type = NODE_TYPE_LEAF;
     m_Datas = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
-    // cout << "MAXNUMDATA" << MAX_KEYS << "\n";
     m_Pointers = (Parray**)malloc((MAXNUM_POINTER-1) * sizeof(Parray*));
     for (int i = 0; i < MAX_KEYS; i++)
     {
@@ -358,7 +308,6 @@ CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER)
         delete m_Pointers[i];
 
     }
-    // cout << "initial size: " << sizeof(m_Datas)/sizeof(int) << "\n";
 
     m_pPrevNode = nullptr;
     m_pNextNode = nullptr;
@@ -373,21 +322,11 @@ CLeafNode::~CLeafNode()
     }
 }
 
-// 在叶子结点中插入数据
 bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
 {
     int i,j;
-    // 找到要插入数据的位置
     for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
-    // cout << "size: " << m_Datas[0] << "\n";
-    // cout<< "value" << value;
      if(value == m_Datas[i]){
-        // cout<<"test";
-        // if(rdata->getNumOfVotes() == 500)
-        // {
-        //     cout<<"okay"<<endl;
-        // }
-        // cout<< "function is : CLeafNode::Insertdata" <<endl;
         m_Pointers[i]->insertarray(rdata);
           return true;
      }
@@ -397,69 +336,42 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
          return false;
      }
 
-    // 当前位置及其后面的数据依次后移，空出当前位置
     for (j = m_Count; j > i; j--)
     {
         m_Datas[j] = m_Datas[j - 1];
        m_Pointers[j] = m_Pointers[j-1];
     }
-    // 把数据存入当前位置
     m_Datas[i] = value;
-   ;  //calculation funtion
     Parray* temp = new Parray();
-    // cout<< "function is : CLeafNode::Insertdata" <<endl;
     temp->insertarray(rdata);
     m_Pointers[i] = temp;
     m_Count++;
-    // 返回成功
     return true;
 }
 
-//bool CLeafNode::insertsamekey(KEY_TYPE value, Record* rdata)
-//{
-//    int i,j;
-//    // 找到要插入数据的位置
-//    for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++){}
-//    cout << "size: " << m_Datas[0] << "\n";
-//    cout<< "value" << value;
-//     if(value == m_Datas[i]){
-//        cout<<"test";
-//        (*m_Pointers[i]).insertarray(rdata);
-//          return true;
-//     }
-//
-//}
-//在叶子结点中插入一个key
 bool CLeafNode::Insert(KEY_TYPE value, Parray* Apointer) //
 {
     int i,j;
-    // 如果叶子结点已满，直接返回失败
     if (GetCount() >= MAX_KEYS)
     {
         return false;
     }
-
-    // 找到要插入数据的位置
     for (i = 0; (value > m_Datas[i]) && ( i < m_Count); i++)
     {
     }
 
-    // 当前位置及其后面的数据依次后移，空出当前位置
     for (j = m_Count; j > i; j--)
     {
         m_Datas[j] = m_Datas[j - 1];
        m_Pointers[j] = m_Pointers[j-1];
     }
 
-    // 把数据存入当前位置
     m_Datas[i] = value;
     m_Pointers[i] = Apointer;
     m_Count++;
 
-    // 返回成功
     return true;
 }
-//在叶子结点中删除一个key
 bool CLeafNode::Delete(KEY_TYPE value)
 {
     int i,j;
@@ -472,13 +384,11 @@ bool CLeafNode::Delete(KEY_TYPE value)
             break;
         }
     }
-    // 如果没有找到，返回失败
     if (false == found)
     {
         return false;
     }
 
-    // 后面的数据依次前移
     for (j = i; j < m_Count - 1; j++)
     {
        m_Datas[j] = m_Datas[j + 1];
@@ -492,15 +402,12 @@ bool CLeafNode::Delete(KEY_TYPE value)
     delete m_Pointers[j];
     m_Count--;
 
-    // 返回成功
     return true;
 
 }
 
-// 分裂叶子结点，把本叶子结点的后一半数据剪切到指定的叶子结点中
 KEY_TYPE CLeafNode::Split(CLeafNode* pNode)
 {
-    // 把本叶子结点的后一半数据移到指定的结点中
     int j = 0;
     for (int i = ORDER_V + 1; i <= MAX_KEYS; i++)
     {
@@ -509,18 +416,14 @@ KEY_TYPE CLeafNode::Split(CLeafNode* pNode)
         pNode->SetPointer1(j, this->GetPointer1(i));
         this->SetElement(i, INVALID);
     }
-    // 设置好Count个数
     this->SetCount(this->GetCount() - j);
     pNode->SetCount(pNode->GetCount() + j);
 
-    // 返回新结点的第一个元素作为键
     return pNode->GetElement(1);
 }
 
-// 结合结点，把指定叶子结点的数据全部剪切到本叶子结点
 bool CLeafNode::Combine(CLeafNode* pNode)
 {
-    // 参数检查
     if (this->GetCount() + pNode->GetCount() > MAX_KEYS)
     {
         return false;
@@ -549,7 +452,6 @@ BPlusTree::~BPlusTree()
     ClearTree();
 }
 
-// 在树中查找数据
 bool BPlusTree::Search(KEY_TYPE data, char* sPath)
 {
     int i = 0;
@@ -561,16 +463,13 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     }
 
     CNode * pNode = GetRoot();
-    // 循环查找对应的叶子结点
     while (nullptr != pNode)
     {
-        // 结点为叶子结点，循环结束
         if (NODE_TYPE_LEAF == pNode->GetType())
         {
             break;
         }
 
-        // 找到第一个键值大于等于key的位置
         for (i = 1; (data >= pNode->GetElement(i) )&& (i <= pNode->GetCount()); i++)
         {
         }
@@ -584,7 +483,6 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
         pNode = pNode->GetPointer(i);
     }
 
-    // 没找到
     if (nullptr == pNode)
     {
         return false;
@@ -596,7 +494,6 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
         offset+=3;
     }
 
-    // 在叶子结点中继续找
     bool found = false;
     for (i = 1; (i <= pNode->GetCount()); i++)
     {
@@ -623,46 +520,12 @@ bool BPlusTree::Search(KEY_TYPE data, char* sPath)
     return found;
 }
 
-/* 在B+树中插入数据
-插入数据首先要找到理论上要插入的叶子结点，然后分三种情况：
-(1) 叶子结点未满。直接在该结点中插入即可；
-(2) 叶子结点已满，且无父结点(即根结点是叶子结点)，需要首先把叶子结点分裂，然后选择插入原结点或新结点，然后新生成根节点；
-(3) 叶子结点已满，但其父结点未满。需要首先把叶子结点分裂，然后选择插入原结点或新结点，再修改父结点的指针；
-(4) 叶子结点已满，且其父结点已满。需要首先把叶子结点分裂，然后选择插入原结点或新结点，接着把父结点分裂，再修改祖父结点的指针。
-    因为祖父结点也可能满，所以可能需要一直递归到未满的祖先结点为止。
-*/
 bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
 {
-    // 检查是否重复插入
-    // cout << "Entered insert in BPlusTree\n";
-    // if(rdata->getNumOfVotes() == 500)
-    // {
-    //     cout<<"This is when bplustree insert"<<endl;
-    // }
     bool found = Search(data, nullptr);
-    //if (true == found)
-    //{;}
-    // for debug
-    //if (289 == data)
-    //{
-    //    printf("\n%d,check failed!",data);
-    //}
-
-    // 查找理想的叶子结点
     CLeafNode* pOldNode = SearchLeafNode(data);
-
-    // if (pOldNode == nullptr)
-    // {
-    //     cout << "Correct, p0ldNode is a nullptr(should only print this once)\n";
-    // }
-    // else{
-    //     cout << "Wrong, pOldNode is returned wrongly (unless it has alr returned nullptr once)\n";
-    // }
-
-    // 如果没有找到，说明整个树是空的，生成根结点
     if (pOldNode == nullptr)
     {
-        // cout << "entered condition check for pOldNode\n";
         pOldNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1);
         m_pLeafHead = pOldNode;
         m_pLeafTail = pOldNode;
@@ -673,19 +536,16 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
         pOldNode->Insertdata(data, rdata);
         return true;
     }
-    // 叶子结点未满，对应情况1，直接插入
     if (pOldNode->GetCount() < MAX_KEYS)
     {
          pOldNode->Insertdata(data,rdata);
          return true;
     }
 
-    // 原叶子结点已满，新建叶子结点，并把原结点后一半数据剪切到新结点
     CLeafNode* pNewNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1);
     KEY_TYPE key = INVALID;
     key = pOldNode->Split(pNewNode);
 
-    // 在双向链表中插入结点
     CLeafNode* pOldNext = pOldNode->m_pNextNode;
     pOldNode->m_pNextNode = pNewNode;
     pNewNode->m_pNextNode = pOldNext;
@@ -699,70 +559,54 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
         pOldNext->m_pPrevNode = pNewNode;
     }
 
-
-    // 判断是插入到原结点还是新结点中，确保是按数据值排序的
     if (data < key)
     {
-        pOldNode->Insertdata(data, rdata);    // 插入原结点
+        pOldNode->Insertdata(data, rdata);
     }
     else
     {
-        pNewNode->Insertdata(data, rdata);    // 插入新结点
+        pNewNode->Insertdata(data, rdata);
     }
 
-    // 父结点
     CInternalNode* pFather = (CInternalNode*)(pOldNode->GetFather());
 
-    // 如果原结点是根节点，对应情况2
     if (nullptr == pFather)
     {
         CNode* pNode1 = new CInternalNode(MAX_KEYS, MAX_KEYS+1);
-        pNode1->SetPointer(1, pOldNode);                           // 指针1指向原结点
-        pNode1->SetElement(1, key);                                // 设置键
-        pNode1->SetPointer(2, pNewNode);                           // 指针2指向新结点
-        pOldNode->SetFather(pNode1);                               // 指定父结点
-        pNewNode->SetFather(pNode1);                               // 指定父结点
+        pNode1->SetPointer(1, pOldNode);
+        pNode1->SetElement(1, key);
+        pNode1->SetPointer(2, pNewNode);
+        pOldNode->SetFather(pNode1);
+        pNewNode->SetFather(pNode1);
         pNode1->SetCount(1);
 
-        SetRoot(pNode1);                                           // 指定新的根结点
+        SetRoot(pNode1);
         return true;
     }
 
-    // 情况3和情况4在这里实现
     bool ret = InsertInternalNode(pFather, key, pNewNode);
     return ret;
 }
 
-/* 删除某数据
-删除数据的算法如下：
-(1) 如果删除后叶子结点填充度仍>=50%，只需要修改叶子结点，如果删除的是父结点的键，父结点也要相应修改；
-(2) 如果删除后叶子结点填充度<50%，需要先找到一个最近的兄弟结点(左右均可)，然后分两种情况：
-    A. 如果该兄弟结点填充度>50%，把该兄弟结点的最近一个数据剪切到本结点，父结点的键值也要相应修改。
-    B. 如果该兄弟结点的填充度=50%，则把两个结点合并，父结点键也相应合并。(如果合并后父结点的填充度<50%，则需要递归)
-*/
+
 bool BPlusTree::Delete(KEY_TYPE data)
 {
-    num_nodes_deleted = 0; // reset to 0 everytime delete tree runs
-    // 查找理想的叶子结点
+    num_nodes_deleted = 0;
     CLeafNode* pOldNode = SearchLeafNode(data);
-    // 如果没有找到，返回失败
     if (nullptr == pOldNode)
     {
         return false;
     }
 
-    // 删除数据，如果失败一定是没有找到，直接返回失败
     bool success = pOldNode->Delete(data);
     if (false == success)
     {
         return false;
     }
 
-    // 获取父结点
     CInternalNode* pFather = (CInternalNode*)(pOldNode->GetFather());
     if (nullptr == pFather)
     {
-        // 如果一个数据都没有了，删除根结点(只有根节点可能出现此情况)
         if (0 == pOldNode->GetCount())
         {
             delete pOldNode;
@@ -774,37 +618,32 @@ bool BPlusTree::Delete(KEY_TYPE data)
         return true;
     }
 
-
-    // 删除后叶子结点填充度仍>=50%，对应情况1
     if (pOldNode->GetCount() >= ORDER_V)
     {
         for (int i = 1; (data >= pFather->GetElement(i)) && (i <= pFather->GetCount()); i++)
         {
-            // 如果删除的是父结点的键值，需要更改该键
             if (pFather->GetElement(i) == data)
             {
-                pFather->SetElement(i, pOldNode->GetElement(1));    // 更改为叶子结点新的第一个元素
+                pFather->SetElement(i, pOldNode->GetElement(1));
             }
         }
 
         return true;
     }
 
-    // 找到一个最近的兄弟结点(根据B+树的定义，除了叶子结点，总是能找到的)
     int flag = FLAG_LEFT;
     CLeafNode* pBrother = (CLeafNode*)(pOldNode->GetBrother(flag));
 
-    // 兄弟结点填充度>50%，对应情况2A
     KEY_TYPE NewData = INVALID;
     Parray* NewPointer = nullptr;
     if (pBrother->GetCount() > ORDER_V)
     {
-        if (FLAG_LEFT == flag)    // 兄弟在左边，移最后一个数据过来
+        if (FLAG_LEFT == flag)
         {
             NewData = pBrother->GetElement(pBrother->GetCount());
             NewPointer = pBrother->GetPointer1(pBrother->GetCount());
         }
-        else    // 兄弟在右边，移第一个数据过来
+        else
         {
             NewData = pBrother->GetElement(1);
             NewPointer = pBrother->GetPointer1(1);
@@ -813,14 +652,13 @@ bool BPlusTree::Delete(KEY_TYPE data)
         pOldNode->Insert(NewData,NewPointer);
         pBrother->Delete(NewData);
 
-        // 修改父结点的键值
         if (FLAG_LEFT == flag)
         {
             for (int i = 1; i <= pFather->GetCount() + 1; i++)
             {
                 if (pFather->GetPointer(i) == pOldNode && i > 1)
                 {
-                    pFather->SetElement(i - 1 , pOldNode->GetElement(1));    // 更改本结点对应的键
+                    pFather->SetElement(i - 1 , pOldNode->GetElement(1));
                 }
             }
         }
@@ -830,11 +668,11 @@ bool BPlusTree::Delete(KEY_TYPE data)
             {
                 if (pFather->GetPointer(i) == pOldNode && i > 1)
                 {
-                    pFather->SetElement(i - 1, pOldNode->GetElement(1));    // 更改本结点对应的键
+                    pFather->SetElement(i - 1, pOldNode->GetElement(1));
                 }
                 if (pFather->GetPointer(i) == pBrother && i > 1)
                 {
-                    pFather->SetElement(i - 1 , pBrother->GetElement(1));    // 更改兄弟结点对应的键
+                    pFather->SetElement(i - 1 , pBrother->GetElement(1));
                 }
             }
         }
@@ -843,12 +681,7 @@ bool BPlusTree::Delete(KEY_TYPE data)
         return true;
     }
 
-    // 情况2B
-
-    // 父结点中要删除的键
     KEY_TYPE NewKey = NULLNODE;
-
-    // 把本结点与兄弟结点合并，无论如何合并到数据较小的结点，这样父结点就无需修改指针
 
     if (FLAG_LEFT == flag)
     {
@@ -857,7 +690,6 @@ bool BPlusTree::Delete(KEY_TYPE data)
 
         CLeafNode* pOldNext = pOldNode->m_pNextNode;
         pBrother->m_pNextNode = pOldNext;
-        // 在双向链表中删除结点
         if (nullptr == pOldNext)
         {
             m_pLeafTail = pBrother;
@@ -866,7 +698,6 @@ bool BPlusTree::Delete(KEY_TYPE data)
         {
             pOldNext->m_pPrevNode = pBrother;
         }
-        // 删除本结点
         delete pOldNode;
     }
     else
@@ -876,7 +707,6 @@ bool BPlusTree::Delete(KEY_TYPE data)
 
         CLeafNode* pOldNext = pBrother->m_pNextNode;
         pOldNode->m_pNextNode = pOldNext;
-        // 在双向链表中删除结点
         if (nullptr == pOldNext)
         {
            m_pLeafTail = pOldNode;
@@ -885,14 +715,12 @@ bool BPlusTree::Delete(KEY_TYPE data)
         {
             pOldNext->m_pPrevNode = pOldNode;
         }
-         // 删除本结点
         delete pBrother;
     }
 
     return DeleteInternalNode(pFather, NewKey);
 }
 
-// 清除整个树，删除所有结点
 void BPlusTree::ClearTree()
 {
     CNode* pNode = GetRoot();
@@ -908,26 +736,6 @@ void BPlusTree::ClearTree()
     SetRoot(nullptr);
 }
 
-// 旋转以重新平衡，实际上是把整个树重构一下,结果不理想，待重新考虑
-//BPlusTree* BPlusTree::RotateTree()
-//{
-//    BPlusTree* pNewTree = new BPlusTree;
-//    int i = 0;
-//    CLeafNode * pNode = m_pLeafHead;
-//    while (nullptr != pNode)
-//    {
-//        for (int i = 1; i <= pNode->GetCount(); i ++)
-//        {
-//           (void)pNewTree->Insert(pNode->GetElement(i));
-//        }
-
-//        pNode = pNode->m_pNextNode;
-//    }
-
-//    return pNewTree;
-
-//}
-// 检查树是否满足B+树的定义
 bool BPlusTree::CheckTree()
 {
     CLeafNode * pThisNode = m_pLeafHead;
@@ -948,7 +756,6 @@ bool BPlusTree::CheckTree()
     return CheckNode(GetRoot());
 }
 
-// 递归检查结点及其子树是否满足B+树的定义
 bool BPlusTree::CheckNode(CNode* pNode)
 {
     if (nullptr == pNode)
@@ -959,13 +766,11 @@ bool BPlusTree::CheckNode(CNode* pNode)
     int i = 0;
     bool ret = false;
 
-    // 检查是否满足50%的填充度
     if ((pNode->GetCount() < ORDER_V) && (pNode != GetRoot()))
-   {
+    {
         return false;
     }
 
-    // 检查键或数据是否按大小排序
     for (i = 1; i < pNode->GetCount(); i++)
     {
         if (pNode->GetElement(i) > pNode->GetElement(i + 1))
@@ -979,11 +784,9 @@ bool BPlusTree::CheckNode(CNode* pNode)
         return true;
     }
 
-    // 对中间结点，递归检查子树
     for (i = 1; i <= pNode->GetCount() + 1; i++)
     {
         ret = CheckNode(pNode->GetPointer(i));
-     // 只要有一个不合法就返回不合法
         if (false == ret)
         {
             return false;
@@ -994,99 +797,19 @@ bool BPlusTree::CheckNode(CNode* pNode)
 
 }
 
-// 打印整个树
-//void BPlusTree::PrintTree()
-//{
-//    CNode* pRoot = GetRoot();
-//    if (nullptr == pRoot) return;
-//
-//    CNode* p1, *p2, *p3;
-//    int i, j, k;
-//    int total = 0;
 
-//    printf("\n第一层\n | ");
-//    PrintNode(pRoot);
-//    total = 0;
-//    printf("\n第二层\n | ");
-//    for (i = 1; i <= MAXNUM_POINTER; i++)
-//    {
-//        p1 = pRoot->GetPointer(i);
-//        if (nullptr == p1) continue;
-//        PrintNode(p1);
-//        total++;
-//        if (total%4 == 0) printf("\n | ");
-//    }
-//    total = 0;
-//    printf("\n第三层\n | ");
-//    for (i = 1; i <= MAXNUM_POINTER; i++)
-//    {
-//        p1 = pRoot->GetPointer(i);
-//        if (nullptr == p1) continue;
-//        for (j = 1; j <= MAXNUM_POINTER; j++)
-//        {
-//            p2 = p1->GetPointer(j);
-//            if (nullptr == p2) continue;
-//            PrintNode(p2);
- //           total++;
-//            if (total%4 == 0) printf("\n | ");
- //       }
-//    }
- //   total = 0;
- //   printf("\n第四层\n | ");
- //   for (i = 1; i <= MAXNUM_POINTER; i++)
- //   {
- //       p1 = pRoot->GetPointer(i);
- // /      if (nullptr == p1) continue;
-//        for (j = 1; j <= MAXNUM_POINTER; j++)
-//        {
-//            p2 = p1->GetPointer(j);
-//            if (nullptr == p2) continue;
-//            for (k = 1; k <= MAXNUM_POINTER; k++)
-//            {
-//                p3 = p2->GetPointer(k);
-//                if (nullptr == p3) continue;
-//                PrintNode(p3);
-//                total++;
-//                if (total%4 == 0) printf("\n | ");
-//            }
-//        }
-//    }
-//}
-
-// 打印某结点
-//void BPlusTree::PrintNode(CNode* pNode)
-//{
-//    if (nullptr == pNode)
-//    {
-//        return;
-//    }
-//
-//    for (int i = 1; i <= MAXNUM_KEY; i++)
-//    {
-//        printf("%3d ", pNode->GetElement(i));
-//        if (i >= MAXNUM_KEY)
-//        {
-//            printf(" | ");
-//        }
-//    }
-//}
-
-// 查找对应的叶子结点
 CLeafNode* BPlusTree::SearchLeafNode(KEY_TYPE data)
 {
     int i = 0;
 
     CNode * pNode = GetRoot();
-    // 循环查找对应的叶子结点
     while (nullptr != pNode)
     {
-        // 结点为叶子结点，循环结束
         if (NODE_TYPE_LEAF == pNode->GetType())
         {
             break;
         }
 
-        // 找到第一个键值大于等于key的位置
         for (i = 1; i <= pNode->GetCount(); i++)
         {
             if (data < pNode->GetElement(i))
@@ -1101,7 +824,6 @@ CLeafNode* BPlusTree::SearchLeafNode(KEY_TYPE data)
     return (CLeafNode*)pNode;
 }
 
-//递归函数：插入键到中间结点
 bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pRightSon)
 {
     if (nullptr == pNode || NODE_TYPE_LEAF ==pNode->GetType())
@@ -1109,15 +831,13 @@ bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pR
         return false;
     }
 
-    // 结点未满，直接插入
     if (pNode->GetCount() < MAX_KEYS)
     {
         return pNode->Insert(key, pRightSon);
     }
 
-    CInternalNode* pBrother = new CInternalNode(MAX_KEYS, MAX_KEYS+1);  //C++中new 类名表示分配一个类需要的内存空间，并返回其首地址；
+    CInternalNode* pBrother = new CInternalNode(MAX_KEYS, MAX_KEYS+1);
     KEY_TYPE NewKey = INVALID;
-    // 分裂本结点
     int flag = -1;
     NewKey = pNode->Split(pBrother, key, &flag);
 
@@ -1129,47 +849,41 @@ bool BPlusTree::InsertInternalNode(CInternalNode* pNode, KEY_TYPE key, CNode* pR
     {
          pBrother->Insert(key, pRightSon);
     }
-    else    // 两者相等，即键值在第V和V+1个键值中间的情况，把字节点挂到新结点的第一个指针上
+    else
     {
         pBrother->SetPointer(1,pRightSon);
         pRightSon->SetFather(pBrother);
     }
 
     CInternalNode* pFather = (CInternalNode*)(pNode->GetFather());
-    // 直到根结点都满了，新生成根结点
     if (nullptr == pFather)
     {
         pFather = new CInternalNode(MAX_KEYS, MAX_KEYS+1);
-        pFather->SetPointer(1, pNode);                           // 指针1指向原结点
-        pFather->SetElement(1, NewKey);                          // 设置键
-        pFather->SetPointer(2, pBrother);                        // 指针2指向新结点
-        pNode->SetFather(pFather);                               // 指定父结点
-        pBrother->SetFather(pFather);                            // 指定父结点
+        pFather->SetPointer(1, pNode);
+        pFather->SetElement(1, NewKey);
+        pFather->SetPointer(2, pBrother);
+        pNode->SetFather(pFather);
+        pBrother->SetFather(pFather);
         pFather->SetCount(1);
 
-        SetRoot(pFather);                                        // 指定新的根结点
+        SetRoot(pFather);
         return true;
     }
 
-    // 递归
     return InsertInternalNode(pFather, NewKey, pBrother);
 }
 
-// 递归函数：在中间结点中删除键
 bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
 {
-    // 删除键，如果失败一定是没有找到，直接返回失败
     bool success = pNode->Delete(key);
     if (false == success)
     {
         return false;
     }
 
-    // 获取父结点
     CInternalNode* pFather = (CInternalNode*)(pNode->GetFather());
     if (nullptr == pFather)
     {
-        // 如果一个数据都没有了，把根结点的第一个结点作为根结点
         if (0 == pNode->GetCount())
         {
             SetRoot(pNode->GetPointer(1));
@@ -1179,39 +893,34 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
         return true;
     }
 
-    // 删除后结点填充度仍>=50%
     if (pNode->GetCount() >= ORDER_V)
     {
         for (int i = 1; (key >= pFather->GetElement(i)) && (i <= pFather->GetCount()); i++)
         {
-            // 如果删除的是父结点的键值，需要更改该键
             if (pFather->GetElement(i) == key)
             {
-                pFather->SetElement(i, pNode->GetElement(1));    // 更改为叶子结点新的第一个元素
+                pFather->SetElement(i, pNode->GetElement(1));
             }
         }
 
         return true;
     }
 
-    //找到一个最近的兄弟结点(根据B+树的定义，除了根结点，总是能找到的)
     int flag = FLAG_LEFT;
     CInternalNode* pBrother = (CInternalNode*)(pNode->GetBrother(flag));
 
-    // 兄弟结点填充度>50%
     KEY_TYPE NewData = INVALID;
     if (pBrother->GetCount() > ORDER_V)
     {
         pNode->MoveOneElement(pBrother);
 
-        // 修改父结点的键值
         if (FLAG_LEFT == flag)
         {
             for (int i = 1; i <= pFather->GetCount() + 1; i++)
             {
                 if (pFather->GetPointer(i) == pNode && i > 1)
                 {
-                    pFather->SetElement(i - 1 , pNode->GetElement(1));    // 更改本结点对应的键
+                    pFather->SetElement(i - 1 , pNode->GetElement(1));
                 }
             }
         }
@@ -1221,11 +930,11 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
             {
                 if (pFather->GetPointer(i) == pNode && i > 1)
                 {
-                    pFather->SetElement(i - 1, pNode->GetElement(1));    // 更改本结点对应的键
+                    pFather->SetElement(i - 1, pNode->GetElement(1));
                 }
                 if (pFather->GetPointer(i) == pBrother && i > 1)
                 {
-                    pFather->SetElement(i - 1 , pBrother->GetElement(1));    // 更改兄弟结点对应的键
+                    pFather->SetElement(i - 1 , pBrother->GetElement(1));
                 }
             }
         }
@@ -1233,10 +942,8 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
         return true;
     }
 
-    // 父结点中要删除的键：兄弟结点都不大于50，则需要合并结点，此时父结点需要删除键
     KEY_TYPE NewKey = NULLNODE;
 
-    // 把本结点与兄弟结点合并，无论如何合并到数据较小的结点，这样父结点就无需修改指针
     if (FLAG_LEFT == flag)
     {
         (void)pBrother->Combine(pNode);
@@ -1250,7 +957,6 @@ bool BPlusTree::DeleteInternalNode(CInternalNode* pNode, KEY_TYPE key)
         delete pBrother;
     }
 
-    // 递归
     return DeleteInternalNode(pFather, NewKey);
 }
 
@@ -1308,12 +1014,6 @@ bool Parray::insertarray(Record* Ppointer){
     {
         return false;
         }
-
-    // if (Ppointer->getNumOfVotes() == 500)
-    // {
-    //     // cout<<"this is asize"<< asize<<endl;
-    // cout << "this is num " << this->num <<endl;
-    // }
     Rpointer.push_back(Ppointer);
 
    return true;

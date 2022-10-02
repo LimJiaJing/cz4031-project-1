@@ -3,9 +3,6 @@
 #include "Calculations.h"
 #include "constants.h"
 
-using std::cout;
-
-
 int Calculations::GetMaxNumOfRecordsPerBlock(int blockSize)
 {
     int numOfRecords = 1;
@@ -69,7 +66,7 @@ int Calculations::GetMaxHeightOfBPlusTree(int blockSize)
 int Calculations::GetMaxNumOfIndexBlocks(int blockSize)
 {
     int maxHeight = GetMaxHeightOfBPlusTree(blockSize);
-    int minNumOfKeysPerInternalNode = GetMinNumOfKeysPerInternalNode(blockSize); 
+    int minNumOfKeysPerInternalNode = GetMinNumOfKeysPerInternalNode(blockSize);
     int numOfBlocks = 1;
     for (int i = 2; i <= maxHeight; i++)
     {
