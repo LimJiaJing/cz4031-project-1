@@ -383,6 +383,11 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     // cout<< "value" << value;
      if(value == m_Datas[i]){
         // cout<<"test";
+        // if(rdata->getNumOfVotes() == 500)
+        // {
+        //     cout<<"okay"<<endl;
+        // }
+        // cout<< "function is : CLeafNode::Insertdata" <<endl;
         m_Pointers[i]->insertarray(rdata);
           return true;
      }
@@ -402,6 +407,7 @@ bool CLeafNode::Insertdata(KEY_TYPE value, Record* rdata)
     m_Datas[i] = value;
    ;  //calculation funtion
     Parray* temp = new Parray(maxnum);
+    // cout<< "function is : CLeafNode::Insertdata" <<endl;
     temp->insertarray(rdata);
     m_Pointers[i] = temp;
     m_Count++;
@@ -524,7 +530,7 @@ BPlusTree::BPlusTree(int Order, short int maxnum1 )
     MAX_KEYS = Order;
     ORDER_V = Order/2;
     maxnum = maxnum1;
-    cout << "max_num_keys_in_node = " << ORDER_V
+    cout << "max_num_keys_in_node = " << MAX_KEYS
          << "\n max pointers in parray = " << maxnum <<"\n";
 }
 BPlusTree::~BPlusTree()
@@ -618,6 +624,10 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
 {
     // 检查是否重复插入
     // cout << "Entered insert in BPlusTree\n";
+    // if(rdata->getNumOfVotes() == 500)
+    // {
+    //     cout<<"This is when bplustree insert"<<endl;
+    // }
     bool found = Search(data, nullptr);
     //if (true == found)
     //{;}
@@ -1287,17 +1297,30 @@ bool Parray::insertarray(Record* Ppointer){
         return false;
         }
     int asize = this->maxnum;
-    if(num>=asize)
+    
+    // if (Ppointer->getNumOfVotes() == 500)
+    // {
+    //     // cout<<"this is asize"<< asize<<endl;
+    // cout << "this is num " << this->num <<endl;
+    // }
+    if(this->num >= asize)
        {
         if((this->next) == nullptr)
             {
                 Parray* newarray=new Parray(asize);
                 (this->next)=newarray;
-                newarray->insertarray(Ppointer);
+                // cout<< "function is : Parray::insertarray" <<endl;
+                // newarray->insertarray(Ppointer);
+                // return true;
              }
-         this->next->insertarray(Ppointer);
+        //  cout<< "function is : Parray::insertarray" <<endl;
+         (this->next)->insertarray(Ppointer);
        return true;
        }
+    if(Ppointer->getNumOfVotes() ==500)
+    {
+        cout <<"This record got num votes "<< Ppointer->getNumOfVotes() << " this is num " << this->num <<endl;
+    }
    Rpointer[num] = Ppointer;
    num++;
    return true;

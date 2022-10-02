@@ -219,9 +219,10 @@ BPlusTree* RunExperiment2(Storage *storage)
 // need to incorporate the Linked list and B+tree portion into the wrapper function if it is to be inside it.
 void RunExperiment3(Storage* storage, BPlusTree *bPlusTree)
 {
-    int key_to_find = 120;
+    int key_to_find = 500;
     CLeafNode *start_node = bPlusTree->SearchLeafNode(key_to_find);
     vector<char *> record_addresses = get_all_record_addr(start_node, key_to_find);
+    cout << "This is the size "<< record_addresses.size() << endl;
     retrieve_search_statistics_storage(storage, record_addresses);
     retrieve_search_statistics_index(bPlusTree, start_node, key_to_find);
 }
@@ -263,8 +264,8 @@ void store_records(Storage *storage)
         }
         string string_component;
         stringstream record_string(line);
-        cout << "This is the Record line from dataset " << line;
-        cout << "\n";
+        // cout << "This is the Record line from dataset " << line;
+        // cout << "\n";
         int name;
         int16_t average_rating_int;
         int numofvotes;
@@ -289,9 +290,9 @@ void store_records(Storage *storage)
         Record temp(name, (int16_t)average_rating_int, numofvotes);
 
         storage->insert_item(&temp, RECORD_SIZE);
-        cout << "\n";
+        // cout << "\n";
         record_number++;
-        if (record_number > 100)
+        if (record_number > 110310)
         {
             break;
         }
@@ -371,7 +372,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
         else{
             cout << "First child node keys: ";
             for (int i = 1; i <= child->GetCount(); i++){
-                cout << root->GetElement(i) << " | ";
+                cout << child->GetElement(i) << " | ";
             }
             cout << "\n";
         }
@@ -419,7 +420,6 @@ vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
             break;
         }
     } while (flag_for_while);
-
     //copy to recordaddr
     for (int i = 0; i < parrays.size(); i++){
 
@@ -427,9 +427,11 @@ vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end)
 
         do{
             int num_pointers = curr_parray->num;
+            cout << "Size of num_pointers" << num_pointers<<endl; 
             Record** curr_array = curr_parray->getarray();
             for (int j = 0; j < num_pointers; j++){
                 Record dummy = storage->retrieve_record((char*)curr_array[j]);
+                cout<< dummy.getTconst();
                 cout << dummy.getNumOfVotes();
                 record_addr.push_back((char*)(curr_array[j]));
             }
@@ -466,9 +468,10 @@ void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_
                 vector<Record> contents_of_block = storage->retrieve_blk(current_block_address);
                 for (int i = 0; i< contents_of_block.size() ; i++)
                  {
-                     cout <<contents_of_block[i].getNumOfVotes()<<endl;
+                     cout <<contents_of_block[i].getNumOfVotes()<< " | ";
                  }
             }
+            cout <<endl;
             Record temp_record = storage->retrieve_record(search_results_addresses[index]);
             average_rating += temp_record.rating2Dec();
             // increment record count no matter what, but block count only if its not consecutively the same
@@ -481,6 +484,8 @@ void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_
     }
     cout<< "Number of Unique blocks accessed is " << block_count<< endl;
     //the contents of first 5 printed out beforehand in the if portion
+    cout<< "This is the record COunt" << record_count <<endl;
+    cout<< "This is the total sum" << average_rating <<endl;
     cout << "Average rating of all the records accessed is " << average_rating/record_count <<endl;
 
     return;
