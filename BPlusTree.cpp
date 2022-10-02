@@ -196,7 +196,7 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新�
             j++;
             this->GetPointer(i)->SetFather(pNode);    // 重新设置子结点的父亲
             pNode->SetPointer(j, this->GetPointer(i));
-            this->SetPointer(i, INVALID);
+            this->SetPointer(i, nullptr);
         }
 
         // 设置好Count个数
@@ -239,7 +239,7 @@ KEY_TYPE CInternalNode::Split(CInternalNode* pNode, KEY_TYPE key)  //key是新�
         j++;
         this->GetPointer(i)->SetFather(pNode);    // 重新设置子结点的父亲
         pNode->SetPointer(j, this->GetPointer(i));
-        this->SetPointer(i, INVALID);
+        this->SetPointer(i, nullptr);
     }
 
     // 清除提取出的位置
@@ -312,7 +312,7 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
 
         // 修改兄弟结点
         pNode->SetElement(pNode->GetCount(), INVALID);
-        pNode->SetPointer(pNode->GetCount() + 1, INVALID);
+        pNode->SetPointer(pNode->GetCount() + 1, nullptr);
     }
     else    // 兄弟结点在本结点右边
     {
