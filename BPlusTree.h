@@ -21,7 +21,6 @@ NODE_TYPE_LEAF     = 3,    // 叶子结点
 #define FLAG_LEFT 1
 #define FLAG_RIGHT 2
 
-int heightOfTree = 0;
 
 /* 结点数据结构，为内部结点和叶子结点的父类 */
 class CNode
@@ -29,7 +28,6 @@ class CNode
 public:
     int ORDER_V;
     int MAX_KEYS;
-    short int maxnum;
     CNode();
     virtual ~CNode();
 
@@ -140,14 +138,12 @@ protected:
 
 class Parray{
 public:
-   short int num;
    vector<Record*> Rpointer;
    Parray* next;
 
    Parray(){
    this->Rpointer = {};
    this->next = nullptr;
-   this->num = 0;
    }
    bool insertarray(Record* pointer);
    vector<Record*> getarray();
@@ -159,7 +155,7 @@ class CLeafNode : public CNode
 {
 public:
 
-    CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER,short int maxnum);
+    CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER);
     virtual ~CLeafNode();
 
     // 获取和设置数据
@@ -232,8 +228,7 @@ class BPlusTree
 public:
     int ORDER_V;
     int MAX_KEYS;
-    short int maxnum;
-    BPlusTree(int order, short int maxnum1);
+    BPlusTree(int order);
     virtual ~BPlusTree();
     BPlusTree *addr_of_object(void) { return this; }
 
@@ -269,11 +264,8 @@ public:
 
     void SetRoot(CNode* root)
     {
-        heightOfTree++;
         m_Root = root;
-        if (root == nullptr){
-            heightOfTree = 0; //reset height to zero if root is nullptr
-        }
+        
     }
 
     // 获取和设置深度

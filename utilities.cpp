@@ -211,7 +211,7 @@ void RunExperiment1(Storage *storage)
 
 BPlusTree* RunExperiment2(Storage *storage)
 {
-    BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize), cals.GetMaxNumOfPointersInLinkedListBlock(blockSize));
+    BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(blockSize));
     build_BPlus_tree(storage, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, true);
     number_of_keys(bPlusTree);
@@ -295,10 +295,10 @@ void store_records(Storage *storage)
         storage->insert_item(&temp, RECORD_SIZE);
         // cout << "\n";
         record_number++;
-        if (record_number > 110310)
-        {
-            break;
-        }
+        // if (record_number > 110310)
+        // {
+        //     break;
+        // }
     }
     infile.close();
 
@@ -314,8 +314,6 @@ void store_records(Storage *storage)
 // experiment 2 helper code
 void build_BPlus_tree(Storage *storage, BPlusTree *bPlusTree)
 {
-    cout << "check ORDER_V" << bPlusTree->ORDER_V << "\n";
-
     int offset = storage->get_blk_size();
     char *curr_block_ptr = (char *)storage->get_storage_ptr();
     int num_allocated_blocks = storage->get_allocated_nof_blk();
@@ -342,7 +340,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
     Calculations cals = Calculations();
     if (parameter_n)
     {
-        cout << "Parameter n of B+ tree: " << cals.GetMaxNumOfKeysPerIndexBlock(block_size); // could change depending on BPlusTree/CNode attributes
+        cout << "Parameter n of B+ tree: " << cals.GetMaxNumOfKeysPerIndexBlock(block_size) << endl; // could change depending on BPlusTree/CNode attributes
     }
     if (num_nodes)
     {
@@ -351,10 +349,7 @@ void report_bPlusTree_statistics(BPlusTree *bPlusTree, int block_size, bool para
     }
     if (height)
     {
-        cout << "Height of B+ tree = " << heightOfTree << "\n";
-        cout << "Note: We consider root node height to be 1, and our height includes the level of the pointer arrays\n"
-             << "pointer arrays are between the leaf nodes and the records"
-             << "(please refer to report for more information)\n";
+        cout << "Height of B+ tree = " << "[please fill in function]" << "\n";
     }
     if (content)
     {
@@ -618,14 +613,18 @@ void number_of_keys(BPlusTree *bPlusTree){
     int prev_key = -1;
     int curr_key = -1;
     int print_count = 0;
+    int keys_to_print = 0;
+    int num_keys_in_node = -1;
     while (leafnode != nullptr)
     {
         leaf_node_count++;
-        int num_keys = leafnode->GetCount();
-        key_count += num_keys;
-        for (int i = 1; i <= num_keys; i++){
+        num_keys_in_node = leafnode->GetCount();
+        key_count += num_keys_in_node;
+        for (int i = 1; i <= num_keys_in_node; i++)
+        {
             curr_key = leafnode->GetElement(i);
-            if (print_count<100){
+            if (print_count < keys_to_print)
+            {
                 cout << curr_key << endl;
                 print_count++;
             }
@@ -643,6 +642,7 @@ void number_of_keys(BPlusTree *bPlusTree){
     cout << "number of leaf nodes = " << leaf_node_count << endl;
     cout << "total number of keys = " << key_count << endl;
     cout << "first key = " << first_key << endl;
-    cout << "last key = " << prev_key << endl;
-
+    cout << "last key = " << curr_key << endl;
+    cout << "size of CLeafNode = " << sizeof(CLeafNode) << endl;
+    cout << "size of CInternalNode = " << sizeof(CInternalNode) << endl;
 }

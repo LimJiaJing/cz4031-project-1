@@ -341,16 +341,14 @@ bool CInternalNode::MoveOneElement(CNode* pNode)
 }
 
 // 清除叶子结点中的数据
-CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER, short int maxnum1)
+CLeafNode::CLeafNode(int MAXNUM_DATA, int MAXNUM_POINTER)
 {
     MAX_KEYS = MAXNUM_DATA;
     ORDER_V = MAX_KEYS / 2;
-    maxnum = maxnum1;
     m_Type = NODE_TYPE_LEAF;
     m_Datas = (KEY_TYPE*)malloc(MAX_KEYS * sizeof(KEY_TYPE));
     // cout << "MAXNUMDATA" << MAX_KEYS << "\n";
     m_Pointers = (Parray**)malloc((MAXNUM_POINTER-1) * sizeof(Parray*));
-    maxnum = maxnum1;
     for (int i = 0; i < MAX_KEYS; i++)
     {
         m_Datas[i] = 0;
@@ -535,18 +533,14 @@ bool CLeafNode::Combine(CLeafNode* pNode)
     num_nodes_deleted++;
     return true;
 }
-BPlusTree::BPlusTree(int Order, short int maxnum1 )
+BPlusTree::BPlusTree(int Order)
 {
-    heightOfTree = 0; //reset height to zero everytime tree is created
     m_Depth = 0;
     m_Root = nullptr;
     m_pLeafHead = nullptr;
     m_pLeafTail = nullptr;
     MAX_KEYS = Order;
     ORDER_V = Order/2;
-    maxnum = maxnum1;
-    cout << "max_num_keys_in_node = " << MAX_KEYS
-         << "\n max pointers in parray = " << maxnum <<"\n";
 }
 BPlusTree::~BPlusTree()
 {
@@ -667,7 +661,7 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
     if (pOldNode == nullptr)
     {
         // cout << "entered condition check for pOldNode\n";
-        pOldNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1, maxnum);
+        pOldNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1);
         m_pLeafHead = pOldNode;
         m_pLeafTail = pOldNode;
         SetRoot(pOldNode);
@@ -685,7 +679,7 @@ bool BPlusTree::Insert(KEY_TYPE data, Record* rdata)
     }
 
     // 原叶子结点已满，新建叶子结点，并把原结点后一半数据剪切到新结点
-    CLeafNode* pNewNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1, maxnum);
+    CLeafNode* pNewNode = new CLeafNode(MAX_KEYS, MAX_KEYS+1);
     KEY_TYPE key = INVALID;
     key = pOldNode->Split(pNewNode);
 
@@ -1318,11 +1312,7 @@ bool Parray::insertarray(Record* Ppointer){
     // cout << "this is num " << this->num <<endl;
     // }
     Rpointer.push_back(Ppointer);
-    if(Ppointer->getNumOfVotes() ==500)
-    {
-        cout <<"This record got num votes "<< Ppointer->getNumOfVotes() << " this is num " << this->num <<endl;
-    }
-   num++;
+
    return true;
 
 }
