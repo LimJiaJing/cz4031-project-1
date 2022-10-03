@@ -979,17 +979,17 @@ int BPlusTree::NumofNode(CNode *root)
     return numofchildnode;
 }
 
-vector<CNode*> BPlusTree::AncestoryOfLeafNode(CLeafNode *node){
+vector<CNode*> BPlusTree::AncestoryOfLeafNode(KEY_TYPE data){
 // only works if leaf node is not the root node
 
    vector<CNode *> chain = {};
     int i = 0;
 
     CNode * pNode = GetRoot();
-    
+
     while (nullptr != pNode)
     {
-     
+
         if (NODE_TYPE_LEAF == pNode->GetType())
         {
             break;
@@ -1006,7 +1006,7 @@ vector<CNode*> BPlusTree::AncestoryOfLeafNode(CLeafNode *node){
         pNode = pNode->GetPointer(i);
     }
     chain.push_back(pNode);
-    return chain
+    return chain;
 }
 
 bool Parray::insertarray(Record* Ppointer){
