@@ -43,6 +43,10 @@ Note:
     ```
 6. Run the program
     ```bash
+    main
+    ```  
+    or
+    ```bash
     .//main
     ```  
 
