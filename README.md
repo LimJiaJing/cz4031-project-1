@@ -43,7 +43,7 @@ Note:
     ```
 6. Run the program
     ```bash
-        main
+    .//main
     ```  
 
 ![image](images/Compile%20and%20run%20program.png)  
