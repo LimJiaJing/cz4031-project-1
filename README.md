@@ -1,5 +1,5 @@
 # cz4031-project-1
-This repository contains the implementation for Project 1 of "Database Systems Principles (CZ/CE4031)" and the project manual which explains the project's requirements. 
+This repository contains the implementation for Project 1 of "Database Systems Principles (CZ/CE4031)". 
 
 # Requirements
 * C++ Standard Library is installed
