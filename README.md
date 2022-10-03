@@ -11,10 +11,8 @@ This repository contains the implementation for Project 1 of "Database Systems P
 # Installation
 Two ways to run the program
 1. Run the windows executable file (.exe)
-    * Only works for Windows 10 machine
-2. Compile the source code and run
-Note: 
-* All CLI used here are for Windows machine. For other OS, modify correspondingly.
+    * Only works for Windows 10 machine  
+  2. Compile the source code and run
 
 
 ## 1. Windows executable file
@@ -23,7 +21,16 @@ Note:
 2. Enter directory `cz4031-project-1`
 3. Double click `main.exe` to run the program  
 
-Note: This method only works on windows 10 machines
+![image](images/Run%20program.png)
+
+Note:
+* This method only works on Windows 10 machines  
+
+* Make sure `main.exe` has permission to execute. You can check by:   
+    1. Right-click the file (main.exe)
+    2. Left-click properties
+    3. Left-click the security tab
+    4. Ensure the `Read & execute` permission is allowed.
 
 ## 2. Compile source code and run
 
@@ -37,9 +44,13 @@ Note: This method only works on windows 10 machines
 6. Run the program
     ```bash
         main
-    ```
-    ![image](images/Compile%20and%20run%20program.png)
-* Make sure the executable from the compilation has permission to execute. You can check by: 
+    ```  
+
+![image](images/Compile%20and%20run%20program.png)  
+Note:
+* All CLI used here are for Windows machine. For other OS, modify correspondingly.  
+
+* Ensure the executable from the compilation (main.exe) has permission to execute. You can check by: 
     1. Right-click the file (main.exe)
     2. Left-click properties
     3. Left-click the security tab
