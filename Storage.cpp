@@ -106,8 +106,8 @@ void Storage::delete_item(char* addr, int size_to_delete) {
     }
     allocated_size -= size_to_delete;
     deleted_slots.push_back(make_pair(addr, size_to_delete));
-    cout << "Record at block " << target_blk_id << " has been successfully deleted." <<endl;
-    cout << "Block "<< target_blk_id << " now has " << blks[target_blk_id].get_space_used() << " bytes used."<<endl;
+    //cout << "Record at block " << target_blk_id << " has been successfully deleted." <<endl;
+    //cout << "Block "<< target_blk_id << " now has " << blks[target_blk_id].get_space_used() << " bytes used."<<endl;
 }
 
 void Storage::update_item(char* addr, int size_to_update, void* new_item) {

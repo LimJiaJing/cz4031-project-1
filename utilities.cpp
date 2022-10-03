@@ -32,7 +32,7 @@ vector<char *> get_all_record_addr(CLeafNode *start_node, int start, int end = 0
 void retrieve_search_statistics_storage(Storage *storage, vector<char *> search_results_addresses);
 void retrieve_search_statistics_index(BPlusTree *bPlusTree, CLeafNode *start_node, int start, int end = 0);
 vector<CLeafNode *> get_nodes_accessed_at_leaf_level(CLeafNode *start_node, int start, int end);
-void number_of_keys(BPlusTree *bPlusTree);
+
 
 //global variables
 Calculations cals;
@@ -214,7 +214,6 @@ BPlusTree* RunExperiment2(Storage *storage)
     BPlusTree* bPlusTree = new BPlusTree(cals.GetMaxNumOfKeysPerIndexBlock(storage->get_blk_size()));
     build_BPlus_tree(storage, bPlusTree);
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), true, true, true, true);
-    number_of_keys(bPlusTree);
     return bPlusTree;
 }
 
@@ -246,7 +245,6 @@ void RunExperiment5(Storage *storage, BPlusTree *bPlusTree, int key)
     report_bPlusTree_statistics(bPlusTree, storage->get_blk_size(), false, true, true, true);
     cout << "Number of times that a node is deleted = " << num_nodes_deleted << "\n"
     << "Note: it does not include the number of Parrays deleted (level between leaf nodes and records)"<<endl;
-    number_of_keys(bPlusTree);
 }
 
 // experiment 1 helper code
@@ -501,7 +499,7 @@ void retrieve_search_statistics_index(BPlusTree* bPlusTree, CLeafNode* start_nod
         }
         cout << "\n";
         printcount++;
-        if (max_printcount==5){
+        if (printcount==5){
             break;
         }
     }
@@ -521,7 +519,7 @@ void retrieve_search_statistics_index(BPlusTree* bPlusTree, CLeafNode* start_nod
         {
             cout << curr_node->GetElement(i) << " | ";
         }
-        //cout << "\n";
+        cout << "\n";
         printcount++;
     }
 }
@@ -588,60 +586,59 @@ void delete_records(Storage *storage, BPlusTree *bPlusTree, int key)
     CLeafNode *start_node = bPlusTree->SearchLeafNode(key);
     vector<char *> record_addresses = get_all_record_addr(start_node, key);
     cout << "Found all records with numVotes = " << key << "\n";
-    cout << "size of ra vector: "<<record_addresses.size()<<endl;
     delete_records_in_db(storage, record_addresses); // this one can return a tuple detailing the number of times a node is deleted
     cout << "Deleted all records with numVotes = " << key << "\n";
     delete_key_in_index(bPlusTree, key);
     cout << "Finished deleting records from storage and updating B+ tree\n";
 }
-
-void number_of_keys(BPlusTree *bPlusTree){
-    int height = 0;
-    CNode* curr_node = bPlusTree->GetRoot();
-    while (curr_node->GetType() != NODE_TYPE_LEAF)
-    {
-        height++; // number of internal nodes in path
-        curr_node = curr_node->GetPointer(1);
-    }
-    height++; // add root level
-    CLeafNode *leafnode = (CLeafNode *)curr_node;
-    int key_count = 0;
-    int leaf_node_count = 0;
-    int first_key = curr_node->GetElement(1);
-    int prev_key = -1;
-    int curr_key = -1;
-    int print_count = 0;
-    int keys_to_print = 0;
-    int num_keys_in_node = -1;
-    while (leafnode != nullptr)
-    {
-        leaf_node_count++;
-        num_keys_in_node = leafnode->GetCount();
-        key_count += num_keys_in_node;
-        for (int i = 1; i <= num_keys_in_node; i++)
-        {
-            curr_key = leafnode->GetElement(i);
-            if (print_count < keys_to_print)
-            {
-                cout << curr_key << endl;
-                print_count++;
-            }
-            if (prev_key>curr_key){
-                cout << "pre key: " << prev_key <<" cur key: " << curr_key<<endl;
-                cout << "there is a sequence issue in leaf level"<<endl;
-            }
-            if (prev_key == curr_key){
-                cout << "there are duplicate keys in leaf level"<<endl;
-            }
-            prev_key = curr_key;
-        }
-        leafnode = leafnode->m_pNextNode;
-    }
-    cout << "height of tree = " << height << endl;
-    cout << "number of leaf nodes = " << leaf_node_count << endl;
-    cout << "total number of keys = " << key_count << endl;
-    cout << "first key = " << first_key << endl;
-    cout << "last key = " << curr_key << endl;
-    cout << "size of CLeafNode = " << sizeof(CLeafNode) << endl;
-    cout << "size of CInternalNode = " << sizeof(CInternalNode) << endl;
-}
+//
+//void number_of_keys(BPlusTree *bPlusTree){
+//    int height = 0;
+//    CNode* curr_node = bPlusTree->GetRoot();
+//    while (curr_node->GetType() != NODE_TYPE_LEAF)
+//    {
+//        height++; // number of internal nodes in path
+//        curr_node = curr_node->GetPointer(1);
+//    }
+//    height++; // add root level
+//    CLeafNode *leafnode = (CLeafNode *)curr_node;
+//    int key_count = 0;
+//    int leaf_node_count = 0;
+//    int first_key = curr_node->GetElement(1);
+//    int prev_key = -1;
+//    int curr_key = -1;
+//    int print_count = 0;
+//    int keys_to_print = 0;
+//    int num_keys_in_node = -1;
+//    while (leafnode != nullptr)
+//    {
+//        leaf_node_count++;
+//        num_keys_in_node = leafnode->GetCount();
+//        key_count += num_keys_in_node;
+//        for (int i = 1; i <= num_keys_in_node; i++)
+//        {
+//            curr_key = leafnode->GetElement(i);
+//            if (print_count < keys_to_print)
+//            {
+//                cout << curr_key << endl;
+//                print_count++;
+//            }
+//            if (prev_key>curr_key){
+//                cout << "pre key: " << prev_key <<" cur key: " << curr_key<<endl;
+//                cout << "there is a sequence issue in leaf level"<<endl;
+//            }
+//            if (prev_key == curr_key){
+//                cout << "there are duplicate keys in leaf level"<<endl;
+//            }
+//            prev_key = curr_key;
+//        }
+//        leafnode = leafnode->m_pNextNode;
+//    }
+//    cout << "height of tree = " << height << endl;
+//    cout << "number of leaf nodes = " << leaf_node_count << endl;
+//    cout << "total number of keys = " << key_count << endl;
+//    cout << "first key = " << first_key << endl;
+//    cout << "last key = " << curr_key << endl;
+//    cout << "size of CLeafNode = " << sizeof(CLeafNode) << endl;
+//    cout << "size of CInternalNode = " << sizeof(CInternalNode) << endl;
+//}

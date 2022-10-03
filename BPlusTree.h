@@ -246,7 +246,7 @@ public:
         }
     }
     int NumofNode(CNode *root);
-    vector<CNode *> AncestoryOfLeafNode(CLeafNode *node);
+    vector<CNode *> AncestoryOfLeafNode(KEY_TYPE data);
 
 public:
     CLeafNode *m_pLeafHead;
