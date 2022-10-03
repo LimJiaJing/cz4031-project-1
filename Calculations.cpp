@@ -7,7 +7,7 @@ int Calculations::GetMaxNumOfRecordsPerBlock(int blockSize)
 {
     int numOfRecords = 1;
     // 8 is the number of bits in 1 byte
-    while (ceil(numOfRecords / 8) + (numOfRecords * RECORD_SIZE) <= blockSize)
+    while ((numOfRecords * RECORD_SIZE) <= blockSize)
     {
         numOfRecords++;
     }
